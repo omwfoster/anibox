@@ -11,11 +11,15 @@
 #include <string.h>
 
 #include "anibox_tft.h"
+
+
 #include "stm32f7xx_hal.h"
 
-#include "stm32f769i_discovery.h"
-#include "stm32f769i_discovery_lcd.h"
-#include "stm32f769i_discovery_sdram.h"
+#include "BSP_DISCO_F769NI/Drivers/BSP/STM32F769I-Discovery/stm32f769i_discovery.h"
+#include "BSP_DISCO_F769NI/Drivers/BSP/STM32F769I-Discovery/stm32f769i_discovery_lcd.h"
+#include "BSP_DISCO_F769NI/Drivers/BSP/STM32F769I-Discovery/stm32f769i_discovery_sdram.h"
+
+
 
 /*********************
  *      DEFINES

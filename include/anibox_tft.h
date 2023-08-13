@@ -6,6 +6,10 @@
 #ifndef DISP_H
 #define DISP_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*********************
  *      INCLUDES
  *********************/
@@ -32,4 +36,9 @@ void tft_init(void);
  *      MACROS
  **********************/
 
+#ifdef __cplusplus
+} /*extern "C"*/
 #endif
+
+#endif
+

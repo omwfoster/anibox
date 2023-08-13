@@ -183,24 +183,24 @@ int main(void)
   MX_HDMI_CEC_Init();
   MX_I2C1_Init();
   MX_I2C4_Init();
-  MX_IWDG_Init();
+  //MX_IWDG_Init();
   MX_LTDC_Init();
   MX_QUADSPI_Init();
   MX_RTC_Init();
   MX_SAI1_Init();
-  MX_SAI2_Init();
-  MX_SDMMC2_MMC_Init();
-  MX_SPDIFRX_Init();
+  //MX_SAI2_Init();
+  //MX_SDMMC2_MMC_Init();
+  //MX_SPDIFRX_Init();
   MX_SPI2_Init();
   anibox_step_tim();
   MX_TIM10_Init();
   MX_TIM11_Init();
   MX_TIM12_Init();
   MX_UART5_Init();
-  MX_USART1_UART_Init();
-  MX_USART6_UART_Init();
-  MX_USB_OTG_HS_PCD_Init();
-  MX_WWDG_Init();
+  //MX_USART1_UART_Init();
+  //MX_USART6_UART_Init();
+  //MX_USB_OTG_HS_PCD_Init();
+  //MX_WWDG_Init();
   /* USER CODE BEGIN 2 */
 
   lv_init();
