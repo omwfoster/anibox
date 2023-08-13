@@ -55,8 +55,6 @@ int anibox_step_init(void)
 {
 
 
- 
-
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */

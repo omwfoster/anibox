@@ -20,6 +20,8 @@
 #include "main.h"
 #include "string.h"
 #include "anibox_step.h"
+#include "anibox_ui.h"
+#include "anibox_tft.h"
 
 
 
@@ -200,6 +202,10 @@ int main(void)
   MX_USB_OTG_HS_PCD_Init();
   MX_WWDG_Init();
   /* USER CODE BEGIN 2 */
+
+  lv_init();
+
+	tft_init();
 
   /* USER CODE END 2 */
 
