@@ -10,7 +10,8 @@
 			"stm32f769i_discovery_sdram.h": "c",
 			"stm32f769i_discovery.h": "c",
 			"lvgl.h": "c",
-			"lv_log.h": "c"
+			"lv_log.h": "c",
+			"stm32f7xx_hal.h": "c"
 		}
 	}
 }
