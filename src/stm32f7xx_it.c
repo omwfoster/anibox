@@ -15,9 +15,9 @@
 #include <cmsis_os.h>
 #endif
 #include "stm32f7xx_it.h"
-#include "BSP_DISCO_F769NI/Drivers/BSP/STM32F769I-Discovery/stm32f769i_discovery.h"
-#include "BSP_DISCO_F769NI/Drivers/BSP/STM32F769I-Discovery/stm32f769i_discovery_lcd.h"
-#include "BSP_DISCO_F769NI/Drivers/BSP/STM32F769I-Discovery/stm32f769i_discovery_sdram.h"
+#include "stm32f769i_discovery.h"
+#include "stm32f769i_discovery_lcd.h"
+#include "stm32f769i_discovery_sdram.h"
 #include "../lvgl.h"
 
 /* Private typedef -----------------------------------------------------------*/

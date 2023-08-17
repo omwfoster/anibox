@@ -43,6 +43,7 @@ void Error_Handler(void);
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 #define USE_RTOS_SYSTICK
+#define LV_USE_GPU_STM32_DMA2D
 #define SAI1_FSA_Pin GPIO_PIN_4
 #define SAI1_FSA_GPIO_Port GPIOE
 #define SAI1_SDB_Pin GPIO_PIN_3

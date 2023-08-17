@@ -1,4 +1,9 @@
 #include "anibox_ui.h"
+
+#include "../.pio/libdeps/disco_f769ni/lvgl/examples/lv_examples.h"
+
+#if LV_BUILD_EXAMPLES && LV_USE_BTN
+
 static void btn_event_cb(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
@@ -18,6 +23,8 @@ static void btn_event_cb(lv_event_t * e)
  */
 void lv_example_get_started_1(void)
 {
+
+    lv_obj_clean(lv_scr_act()); 
     lv_obj_t * btn = lv_btn_create(lv_scr_act());     /*Add a button the current screen*/
     lv_obj_set_pos(btn, 10, 10);                            /*Set its position*/
     lv_obj_set_size(btn, 120, 50);                          /*Set its size*/
@@ -27,3 +34,5 @@ void lv_example_get_started_1(void)
     lv_label_set_text(label, "Button");                     /*Set the labels text*/
     lv_obj_center(label);
 }
+
+#endif

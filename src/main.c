@@ -20,8 +20,10 @@
 #include "main.h"
 #include "string.h"
 #include "anibox_step.h"
-#include "anibox_ui.h"
-#include "anibox_tft.h"
+#include "hal_stm_lvgl/tft/tft.h"
+#include "hal_stm_lvgl/touchpad/touchpad.h"
+
+
 
 
 
@@ -102,7 +104,6 @@ osThreadId defaultTaskHandle;uint8_t cec_receive_buffer[16];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
 void PeriphCommonClock_Config(void);
 static void anibox_step_gpio(void);
 static void MX_ADC1_Init(void);
@@ -134,6 +135,9 @@ static void MX_USB_OTG_HS_PCD_Init(void);
 static void MX_WWDG_Init(void);
 void StartDefaultTask(void const * argument);
 
+static void SystemClock_Config(void);
+static void CPU_CACHE_Enable(void);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -152,6 +156,8 @@ int main(void)
   /* USER CODE BEGIN 1 */
   //FLASH->ACR |= FLASH_ACR_DISFOLD_Msk;
   /* USER CODE END 1 */
+
+    CPU_CACHE_Enable();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -173,30 +179,30 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  anibox_step_gpio();
-  MX_ADC1_Init();
-  MX_ADC3_Init();
+  //anibox_step_gpio();
+  //MX_ADC1_Init();
+  //MX_ADC3_Init();
   MX_CRC_Init();
   MX_DMA2D_Init();
   MX_DSIHOST_DSI_Init();
-  MX_FMC_Init();
-  MX_HDMI_CEC_Init();
-  MX_I2C1_Init();
-  MX_I2C4_Init();
+  //MX_FMC_Init();
+  //MX_HDMI_CEC_Init();
+  //MX_I2C1_Init();
+  //MX_I2C4_Init();
   //MX_IWDG_Init();
   MX_LTDC_Init();
-  MX_QUADSPI_Init();
+  //MX_QUADSPI_Init();
   MX_RTC_Init();
   MX_SAI1_Init();
   //MX_SAI2_Init();
   //MX_SDMMC2_MMC_Init();
   //MX_SPDIFRX_Init();
-  MX_SPI2_Init();
-  anibox_step_tim();
+  //MX_SPI2_Init();
+  //anibox_step_tim();
   MX_TIM10_Init();
   MX_TIM11_Init();
   MX_TIM12_Init();
-  MX_UART5_Init();
+  //MX_UART5_Init();
   //MX_USART1_UART_Init();
   //MX_USART6_UART_Init();
   //MX_USB_OTG_HS_PCD_Init();
@@ -206,6 +212,10 @@ int main(void)
   lv_init();
 
 	tft_init();
+
+  touchpad_init();
+
+ 
 
   /* USER CODE END 2 */
 
@@ -227,8 +237,8 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  //osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 4096);
-  //defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 4096);
+  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -243,7 +253,8 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+    lv_task_handler();
+		HAL_Delay(5);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -253,7 +264,7 @@ int main(void)
   * @brief System Clock Configuration
   * @retval None
   */
-void SystemClock_Config(void)
+static void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
@@ -1730,6 +1741,15 @@ void Error_Handler(void)
   {
   }
   /* USER CODE END Error_Handler_Debug */
+}
+
+static void CPU_CACHE_Enable(void)
+{
+  /* Enable I-Cache */
+  SCB_EnableICache();
+
+  /* Enable D-Cache */
+  SCB_EnableDCache();
 }
 
 #ifdef  USE_FULL_ASSERT

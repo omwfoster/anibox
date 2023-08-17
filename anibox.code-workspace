@@ -11,7 +11,14 @@
 			"stm32f769i_discovery.h": "c",
 			"lvgl.h": "c",
 			"lv_log.h": "c",
-			"stm32f7xx_hal.h": "c"
+			"stm32f7xx_hal.h": "c",
+			"otm8009a.h": "c",
+			"anibox_tft.h": "c",
+			"anibox_ui.h": "c",
+			"lv_example_style.h": "c",
+			"lv_example_get_started.h": "c",
+			"main.h": "c",
+			"anibox_step.h": "c"
 		}
 	}
 }

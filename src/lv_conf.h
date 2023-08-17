@@ -77,6 +77,8 @@
    HAL SETTINGS
  *====================*/
 
+
+
 /*Default display refresh period. LVG will redraw changed areas with this period time*/
 #define LV_DISP_DEF_REFR_PERIOD 30      /*[ms]*/
 
