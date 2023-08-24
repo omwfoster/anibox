@@ -18,7 +18,8 @@
 			"lv_example_style.h": "c",
 			"lv_example_get_started.h": "c",
 			"main.h": "c",
-			"anibox_step.h": "c"
+			"anibox_step.h": "c",
+			"lv_demos.h": "c"
 		}
 	}
 }

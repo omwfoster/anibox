@@ -22,6 +22,11 @@
 #include "anibox_step.h"
 #include "hal_stm_lvgl/tft/tft.h"
 #include "hal_stm_lvgl/touchpad/touchpad.h"
+#include "anibox_ui.h"
+#include "demos/lv_demos.h"
+
+
+
 
 
 
@@ -134,6 +139,7 @@ static void MX_USART6_UART_Init(void);
 static void MX_USB_OTG_HS_PCD_Init(void);
 static void MX_WWDG_Init(void);
 void StartDefaultTask(void const * argument);
+void ui_thread();
 
 static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
@@ -198,7 +204,7 @@ int main(void)
   //MX_SDMMC2_MMC_Init();
   //MX_SPDIFRX_Init();
   //MX_SPI2_Init();
-  //anibox_step_tim();
+  anibox_step_tim();
   MX_TIM10_Init();
   MX_TIM11_Init();
   MX_TIM12_Init();
@@ -214,6 +220,8 @@ int main(void)
 	tft_init();
 
   touchpad_init();
+
+
 
  
 
@@ -237,15 +245,20 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 4096);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  osThreadDef(ui_thread, ui_thread, osPriorityNormal, 0, 4096);
+  defaultTaskHandle = osThreadCreate(osThread(ui_thread), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
+  
 
   /* Start scheduler */
+  anibox_step_gpio();
+  anibox_step_tim();
   osKernelStart();
+
+  lv_demo_widgets();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
@@ -253,7 +266,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    lv_task_handler();
+    
 		HAL_Delay(5);
     /* USER CODE BEGIN 3 */
   }
@@ -1728,6 +1741,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE END Callback 1 */
 }
 
+
+void ui_thread()
+{
+  lv_example_get_started_1();
+
+  while(1)
+  {
+    lv_task_handler();
+  }
+}
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
