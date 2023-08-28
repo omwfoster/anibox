@@ -17,9 +17,11 @@
 			"anibox_ui.h": "c",
 			"lv_example_style.h": "c",
 			"lv_example_get_started.h": "c",
-			"main.h": "c",
+			"main.hpp": "c",
 			"anibox_step.h": "c",
-			"lv_demos.h": "c"
+			"lv_demos.h": "c",
+			"stm32f769i_discovery_ts.h": "c",
+			"lv_demo_widgets.h": "c"
 		}
 	}
 }

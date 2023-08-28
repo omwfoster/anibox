@@ -17,12 +17,12 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+#include "main.hpp"
 #include "string.h"
 #include "anibox_step.h"
-#include "hal_stm_lvgl/tft/tft.h"
-#include "hal_stm_lvgl/touchpad/touchpad.h"
-#include "anibox_ui.h"
+#include "tft.h"
+#include "touchpad.h"
+#include "lvgl.h"
 #include "demos/lv_demos.h"
 
 
@@ -139,7 +139,7 @@ static void MX_USART6_UART_Init(void);
 static void MX_USB_OTG_HS_PCD_Init(void);
 static void MX_WWDG_Init(void);
 void StartDefaultTask(void const * argument);
-void ui_thread();
+void ui_thread(void const *arg);
 
 static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
@@ -188,18 +188,18 @@ int main(void)
   //anibox_step_gpio();
   //MX_ADC1_Init();
   //MX_ADC3_Init();
-  MX_CRC_Init();
-  MX_DMA2D_Init();
-  MX_DSIHOST_DSI_Init();
+  //MX_CRC_Init();
+  //MX_DMA2D_Init();
+  //MX_DSIHOST_DSI_Init();
   //MX_FMC_Init();
   //MX_HDMI_CEC_Init();
   //MX_I2C1_Init();
   //MX_I2C4_Init();
   //MX_IWDG_Init();
-  MX_LTDC_Init();
+  //MX_LTDC_Init();
   //MX_QUADSPI_Init();
-  MX_RTC_Init();
-  MX_SAI1_Init();
+  //MX_RTC_Init();
+  //MX_SAI1_Init();
   //MX_SAI2_Init();
   //MX_SDMMC2_MMC_Init();
   //MX_SPDIFRX_Init();
@@ -254,8 +254,8 @@ int main(void)
   
 
   /* Start scheduler */
-  anibox_step_gpio();
-  anibox_step_tim();
+  //anibox_step_gpio();
+  //anibox_step_tim();
   osKernelStart();
 
   lv_demo_widgets();
@@ -266,7 +266,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    
+    lv_task_handler();
 		HAL_Delay(5);
     /* USER CODE BEGIN 3 */
   }
@@ -1742,14 +1742,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 }
 
 
-void ui_thread()
+void ui_thread(void const *arg)
 {
-  lv_example_get_started_1();
-
   while(1)
   {
     lv_task_handler();
+    osDelay(5);
   }
+
 }
 /**
   * @brief  This function is executed in case of error occurrence.

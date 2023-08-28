@@ -9,7 +9,7 @@ extern "C" {
 #define DIR_GPIO_Port GPIOA
 
 
-#include "main.h"
+#include "main.hpp"
 #include "stm32f7xx_hal.h"
 
 #ifdef __cplusplus
