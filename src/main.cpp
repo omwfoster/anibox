@@ -23,7 +23,7 @@
 #include "tft.h"
 #include "touchpad.h"
 #include "lvgl.h"
-#include "demos/lv_demos.h"
+#include "anibox_ui/lv_demos.h"
 
 
 
@@ -189,21 +189,21 @@ int main(void)
   //MX_ADC1_Init();
   //MX_ADC3_Init();
   //MX_CRC_Init();
-  //MX_DMA2D_Init();
-  //MX_DSIHOST_DSI_Init();
+  MX_DMA2D_Init();
+  MX_DSIHOST_DSI_Init();
   //MX_FMC_Init();
-  //MX_HDMI_CEC_Init();
-  //MX_I2C1_Init();
-  //MX_I2C4_Init();
+  MX_HDMI_CEC_Init();
+  MX_I2C1_Init();
+  MX_I2C4_Init();
   //MX_IWDG_Init();
   //MX_LTDC_Init();
-  //MX_QUADSPI_Init();
+  MX_QUADSPI_Init();
   //MX_RTC_Init();
   //MX_SAI1_Init();
   //MX_SAI2_Init();
   //MX_SDMMC2_MMC_Init();
   //MX_SPDIFRX_Init();
-  //MX_SPI2_Init();
+  MX_SPI2_Init();
   anibox_step_tim();
   MX_TIM10_Init();
   MX_TIM11_Init();
@@ -225,32 +225,13 @@ int main(void)
 
  
 
-  /* USER CODE END 2 */
 
-  /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
-
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
-  /* USER CODE END RTOS_SEMAPHORES */
-
-  /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
-  /* USER CODE END RTOS_TIMERS */
-
-  /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
-  /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
   osThreadDef(ui_thread, ui_thread, osPriorityNormal, 0, 4096);
   defaultTaskHandle = osThreadCreate(osThread(ui_thread), NULL);
 
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
-  /* USER CODE END RTOS_THREADS */
   
 
   /* Start scheduler */
@@ -258,7 +239,7 @@ int main(void)
   //anibox_step_tim();
   osKernelStart();
 
-  lv_demo_widgets();
+  
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
@@ -1744,6 +1725,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void ui_thread(void const *arg)
 {
+  lv_demo_widgets();
+
   while(1)
   {
     lv_task_handler();
