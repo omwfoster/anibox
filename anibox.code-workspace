@@ -22,7 +22,8 @@
 			"lv_demos.h": "c",
 			"stm32f769i_discovery_ts.h": "c",
 			"lv_demo_widgets.h": "c",
-			"gui_guider.h": "c"
+			"gui_guider.h": "c",
+			"widgets_init.h": "c"
 		}
 	}
 }

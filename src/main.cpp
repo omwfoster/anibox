@@ -139,6 +139,8 @@ void ui_thread(void const *arg);
 static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
 
+lv_ui guider_ui;
+
 // Thread Handles
 osThreadId lvgl_tickHandle;
 osThreadId lvgl_timerHandle;
@@ -187,26 +189,27 @@ int main(void)
   /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
 
-  MX_DMA2D_Init();
-  MX_DSIHOST_DSI_Init();
+   MX_DMA2D_Init();
+   MX_DSIHOST_DSI_Init();
 
   // anibox_step_tim();
   // MX_TIM10_Init();
   // MX_TIM11_Init();
   // MX_TIM12_Init();
 
-  lv_ui guider_ui;
+  
   lv_init();
+
+  tft_init();
+  touchpad_init();
   setup_ui(&guider_ui);
   events_init(&guider_ui);
   custom_init(&guider_ui);
-  tft_init();
-  touchpad_init();
+
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(ui_thread, ui_thread, osPriorityNormal, 0, 4096);
-  defaultTaskHandle = osThreadCreate(osThread(ui_thread), NULL);
+ 
 
   /* definition and creation of lvgl_tick */
   osThreadDef(lvgl_tick, LGVLTick, osPriorityNormal, 0, 1024);
@@ -215,6 +218,9 @@ int main(void)
   // LVGL update timer
   osThreadDef(lvgl_timer, LVGLTimer, osPriorityNormal, 0, 1024);
   lvgl_timerHandle = osThreadCreate(osThread(lvgl_timer), NULL);
+
+  osThreadDef(ui_thread, ui_thread, osPriorityNormal, 0, 4096);
+  defaultTaskHandle = osThreadCreate(osThread(ui_thread), NULL);
 
   /* Start scheduler */
   // anibox_step_gpio();
