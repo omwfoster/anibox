@@ -27,6 +27,7 @@
 #include "events_init.h"
 #include "custom.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -204,7 +205,7 @@ int main(void)
   touchpad_init();
   setup_ui(&guider_ui);
   events_init(&guider_ui);
-  custom_init(&guider_ui);
+  
 
 
   /* Create the thread(s) */

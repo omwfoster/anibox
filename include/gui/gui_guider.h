@@ -7,20 +7,33 @@
 * terms, then you may not retain, install, activate or otherwise use the software.
 */
 
-
-#ifndef EVENTS_INIT_H_
-#define EVENTS_INIT_H_
+#ifndef GUI_GUIDER_H
+#define GUI_GUIDER_H
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "gui_guider.h"
+#include "lvgl.h"
 
-void events_init(lv_ui *ui);
+typedef struct
+{
+  
+	lv_obj_t *screen;
+	bool screen_del;
+	lv_obj_t *screen_cont_1;
+	lv_obj_t *screen_slider_1;
+}lv_ui;
 
-void events_init_record(lv_ui *ui);
+void ui_init_style(lv_style_t * style);
+void init_scr_del_flag(lv_ui *ui);
+void setup_ui(lv_ui *ui);
+extern lv_ui guider_ui;
+
+void setup_scr_screen(lv_ui *ui);
+
+
 
 #ifdef __cplusplus
 }
 #endif
-#endif /* EVENT_CB_H_ */
+#endif

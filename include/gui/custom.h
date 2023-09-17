@@ -1,9 +1,15 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2020 NXP
+
 /*
  * custom.h
  *
  *  Created on: July 29, 2020
  *      Author: nxf53801
  */
+
+#ifndef BDC765DB_0C6C_46EC_B540_A7D447B73249
+#define BDC765DB_0C6C_46EC_B540_A7D447B73249
 
 #ifndef __CUSTOM_H_
 #define __CUSTOM_H_
@@ -15,10 +21,10 @@ extern "C" {
 
 void custom_init(lv_ui *ui);
 
-void speed_meter_timer_cb(lv_timer_t * t);
-void record_chart_timer_cb(lv_timer_t * t);
-
 #ifdef __cplusplus
 }
 #endif
 #endif /* EVENT_CB_H_ */
+
+
+#endif /* BDC765DB_0C6C_46EC_B540_A7D447B73249 */

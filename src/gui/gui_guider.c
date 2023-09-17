@@ -7,37 +7,28 @@
 * terms, then you may not retain, install, activate or otherwise use the software.
 */
 
-#include "events_init.h"
-#include <stdio.h>
 #include "lvgl.h"
+#include <stdio.h>
+#include "gui_guider.h"
 
 
-static lv_timer_t * task_chart;
-static void record_event_handler (lv_event_t *e)
+void ui_init_style(lv_style_t * style)
 {
-	lv_event_code_t code = lv_event_get_code(e);
-
-	switch (code) {
-	case LV_EVENT_SCREEN_LOADED:
-	{
-	//	task_chart = lv_timer_create(record_chart_timer_cb, 100, guider_ui.record_chart_board);
-		break;
-	}
-	case LV_EVENT_SCREEN_UNLOAD_START:
-	{
-		lv_timer_del(task_chart);
-		break;
-	}
-	default:
-		break;
-	}
-}
-void events_init_record(lv_ui *ui)
-{
-	lv_obj_add_event_cb(ui->record, record_event_handler, LV_EVENT_ALL, NULL);
+  if (style->prop_cnt > 1)
+    lv_style_reset(style);
+  else
+    lv_style_init(style);
 }
 
-void events_init(lv_ui *ui)
+void init_scr_del_flag(lv_ui *ui)
 {
+  
+	ui->screen_del = true;
+}
 
+void setup_ui(lv_ui *ui)
+{
+  init_scr_del_flag(ui);
+  setup_scr_screen(ui);
+  lv_scr_load(ui->screen);
 }
