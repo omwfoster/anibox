@@ -19,13 +19,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.hpp"
 #include "string.h"
-#include "anibox_step.h"
 #include "tft.h"
 #include "touchpad.h"
 #include "lvgl.h"
 #include "gui_guider.h"
 #include "events_init.h"
 #include "custom.h"
+#include "stepper/stepper.h"
+#include "stepper/queue.h"
 
 
 /* Private includes ----------------------------------------------------------*/
@@ -167,6 +168,35 @@ void LGVLTick(void const *argument)
   }
 }
 
+#define STEP_PIN            (1 << 5)
+#define STEP_PIN_AF_MODE    (1 << 11)
+#define STEP_PIN_AF1        (1 << 20)
+
+Stepper motor(400);
+Queue   commands(10);
+
+uint8_t step_init()
+{
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+    RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+
+    GPIOA->AFR[0] |= STEP_PIN_AF1;
+    GPIOA->MODER |= STEP_PIN_AF_MODE;
+
+    motor.timerInit(TIM2, 1, TIM2_IRQn, 16000000);
+    motor.setDirPin(GPIOA, 9);
+    motor.setSleepPin(GPIOA, 8);
+    motor.setSpeed(150);
+    motor.enableInterrupt();
+    
+    commands.push(400);
+    commands.push(-400);
+    commands.push(50);
+    commands.push(-50);
+    commands.push(400);
+    commands.push(-400);
+}
+
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -174,6 +204,8 @@ int main(void)
   /* USER CODE END 1 */
 
   CPU_CACHE_Enable();
+
+  
 
   /* MCU Configuration--------------------------------------------------------*/
 
