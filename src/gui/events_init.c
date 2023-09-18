@@ -12,6 +12,10 @@
 #include "lvgl.h"
 
 
+void events_init_screen(lv_ui *ui)
+{
+	lv_obj_add_event_cb(ui->screen_spinner_1, screen_spinner_1_event_handler, LV_EVENT_ALL, NULL);
+}
 
 void events_init(lv_ui *ui)
 {

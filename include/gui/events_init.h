@@ -20,6 +20,8 @@ void events_init(lv_ui *ui);
 
 void events_init_screen(lv_ui *ui);
 
+extern  void screen_spinner_1_event_handler (lv_event_t *e);
+
 #ifdef __cplusplus
 }
 #endif

@@ -21,7 +21,19 @@ typedef struct
 	lv_obj_t *screen;
 	bool screen_del;
 	lv_obj_t *screen_cont_1;
-	lv_obj_t *screen_slider_1;
+	lv_obj_t *screen_cont_2;
+	lv_obj_t *screen_btn_1;
+	lv_obj_t *screen_btn_1_label;
+	lv_obj_t *screen_btn_2;
+	lv_obj_t *screen_btn_2_label;
+	lv_obj_t *screen_btn_3;
+	lv_obj_t *screen_btn_3_label;
+	lv_obj_t *screen_spinner_1;
+	lv_obj_t *screen_led_2;
+	lv_obj_t *screen_led_1;
+	lv_obj_t *screen_canvas_1;
+	lv_obj_t *screen_btn_4;
+	lv_obj_t *screen_btn_4_label;
 }lv_ui;
 
 void ui_init_style(lv_style_t * style);
@@ -31,6 +43,8 @@ extern lv_ui guider_ui;
 
 void setup_scr_screen(lv_ui *ui);
 
+LV_FONT_DECLARE(lv_font_arial_16)
+LV_FONT_DECLARE(lv_font_arial_12)
 
 
 #ifdef __cplusplus

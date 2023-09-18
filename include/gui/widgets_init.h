@@ -7,9 +7,6 @@
 * terms, then you may not retain, install, activate or otherwise use the software.
 */
 
-#ifndef AB33BD3B_7B29_41A0_AE3B_1C2FDAA15665
-#define AB33BD3B_7B29_41A0_AE3B_1C2FDAA15665
-
 #ifndef WIDGET_INIT_H
 #define WIDGET_INIT_H
 #ifdef __cplusplus
@@ -31,6 +28,3 @@ void clock_count(int *hour, int *min, int *sec);
 }
 #endif
 #endif
-
-
-#endif /* AB33BD3B_7B29_41A0_AE3B_1C2FDAA15665 */

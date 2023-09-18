@@ -173,11 +173,13 @@ void LGVLTick(void const *argument)
 #define STEP_PIN_AF1        (1 << 20)
 
 Stepper motor(400);
-Queue   commands(10);
+Queue   commands(2);
+
 
 uint8_t step_init()
 {
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
     RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
 
     GPIOA->AFR[0] |= STEP_PIN_AF1;
@@ -221,6 +223,8 @@ int main(void)
 
   /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
+
+   step_init();
 
    MX_DMA2D_Init();
    MX_DSIHOST_DSI_Init();
@@ -1731,6 +1735,21 @@ static void CPU_CACHE_Enable(void)
 
   /* Enable D-Cache */
   SCB_EnableDCache();
+}
+
+void screen_spinner_1_event_handler (lv_event_t *e)
+{
+	lv_event_code_t code = lv_event_get_code(e);
+
+	switch (code) {
+	case LV_EVENT_VALUE_CHANGED:
+	{
+		commands.push(e->code);
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 #ifdef USE_FULL_ASSERT
