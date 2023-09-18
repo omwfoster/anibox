@@ -165,10 +165,7 @@ void setup_scr_screen(lv_ui *ui)
 
 
 
-	//Write style for screen_canvas_1, Part: LV_PART_MAIN, State: LV_STATE_DEFAULT.
-	lv_obj_set_style_img_recolor_opa(ui->screen_canvas_1, 255, LV_PART_MAIN|LV_STATE_DEFAULT);
-	lv_obj_set_style_img_recolor(ui->screen_canvas_1, lv_color_hex(0xffffff), LV_PART_MAIN|LV_STATE_DEFAULT);
-	lv_obj_set_style_shadow_width(ui->screen_canvas_1, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+
 
 	//Write codes screen_btn_4
 	ui->screen_btn_4 = lv_btn_create(ui->screen_cont_1);

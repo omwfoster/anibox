@@ -173,7 +173,7 @@ void LGVLTick(void const *argument)
 #define STEP_PIN_AF1        (1 << 20)
 
 Stepper motor(400);
-Queue   commands(2);
+Queue   commands(20);
 
 
 uint8_t step_init()
@@ -191,12 +191,7 @@ uint8_t step_init()
     motor.setSpeed(150);
     motor.enableInterrupt();
     
-    commands.push(400);
-    commands.push(-400);
-    commands.push(50);
-    commands.push(-50);
-    commands.push(400);
-    commands.push(-400);
+
 }
 
 int main(void)
@@ -229,7 +224,7 @@ int main(void)
    MX_DMA2D_Init();
    MX_DSIHOST_DSI_Init();
 
-  // anibox_step_tim();
+  
   // MX_TIM10_Init();
   // MX_TIM11_Init();
   // MX_TIM12_Init();
