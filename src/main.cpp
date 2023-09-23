@@ -1,4 +1,7 @@
-
+// anibox - research box controller
+// by oliver foster - omwfoster
+// published under GPL
+// untested and with zero liability 
 
 #include "main.hpp"
 #include "string.h"
