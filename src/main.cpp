@@ -30,6 +30,8 @@ static void MX_TIM11_Init();
 
 void StartDefaultTask(void const *argument);
 void ui_thread(void const *arg);
+void LVGLTimer(void const *arg);
+void LGVLTick(void const *arg);
 
 static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
@@ -84,41 +86,26 @@ uint8_t step_init()
   GPIOJ->AFR[0] |= STEP_PIN_AF1;
   GPIOJ->MODER |= STEP_PIN_AF_MODE;
 
-  // Configure output pin
+  // Configure output pin for stepper 1 step pin
   GPIO_InitTypeDef GPIO_initstruct;
   GPIO_initstruct.Pin = GPIO_PIN_8;
   GPIO_initstruct.Mode = GPIO_MODE_AF_PP;
   GPIO_initstruct.Speed = GPIO_SPEED_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_initstruct);
 
-  
+  // Configure output pin for stepper 1 step pin
   GPIO_initstruct.Pin = GPIO_PIN_7;
   GPIO_initstruct.Mode = GPIO_MODE_AF_PP;
   GPIO_initstruct.Speed = GPIO_SPEED_LOW;
   HAL_GPIO_Init(GPIOF, &GPIO_initstruct);
   
 
-  motor1.timerInit(TIM3, 3 , TIM3_IRQn , 16000000);
-  motor1.setDirPin(GPIOJ, 0);
-  motor1.setSleepPin(GPIOB, 8);
-  motor1.setSpeed(150);
-  motor1.enableInterrupt();
-
-  motor2.timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
-  motor2.setDirPin(GPIOI, 3);
-  motor2.setSleepPin(GPIOB, 8);
-  motor2.setSpeed(150);
-  motor2.enableInterrupt();
-
-
+ 
 
 }
 
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
-  // FLASH->ACR |= FLASH_ACR_DISFOLD_Msk;
-  /* USER CODE END 1 */
 
   CPU_CACHE_Enable();
 
@@ -133,28 +120,44 @@ int main(void)
 
   MX_DMA2D_Init();
   MX_DSIHOST_DSI_Init();
-
   MX_TIM10_Init();
   MX_TIM3_Init();
   MX_TIM11_Init();
 
-  lv_init();
 
+  //lvgl initialisation
+  
+  lv_init();
   tft_init();
   touchpad_init();
   setup_ui(&guider_ui);
   events_init(&guider_ui);
 
+
+  //initial command for stepper initialisation - link to timers and irq handler
+
+  motor1.timerInit(TIM3, 3 , TIM3_IRQn , 16000000);
+  motor1.setDirPin(GPIOJ, 0);
+  motor1.setSleepPin(GPIOB, 8);
+  motor1.setSpeed(150);
+  motor1.enableInterrupt();
+
+  motor2.timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
+  motor2.setDirPin(GPIOI, 3);
+  motor2.setSleepPin(GPIOB, 8);
+  motor2.setSpeed(150);
+  motor2.enableInterrupt();
+
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
 
   /* definition and creation of lvgl_tick */
-  osThreadDef(lvgl_tick, LGVLTick, osPriorityNormal, 0, 1024);
-  lvgl_tickHandle = osThreadCreate(osThread(lvgl_tick), NULL);
+  osThreadDef(LGVLTick, LGVLTick, osPriorityNormal, 0, 1024);
+  lvgl_tickHandle = osThreadCreate(osThread(LGVLTick), NULL);
 
   // LVGL update timer
-  osThreadDef(lvgl_timer, LVGLTimer, osPriorityNormal, 0, 1024);
-  lvgl_timerHandle = osThreadCreate(osThread(lvgl_timer), NULL);
+  osThreadDef(LVGLTimer, LVGLTimer, osPriorityNormal, 0, 1024);
+  lvgl_timerHandle = osThreadCreate(osThread(LVGLTimer), NULL);
 
   osThreadDef(ui_thread, ui_thread, osPriorityNormal, 0, 4096);
   defaultTaskHandle = osThreadCreate(osThread(ui_thread), NULL);
@@ -295,7 +298,7 @@ static void MX_DMA2D_Init(void)
 }
 
 /**
- * @brief DSIHOST Initialization Function
+ * @brief DSIHOST Initialization Function - Stm32Cube generated
  * @param None
  * @retval None
  */
