@@ -77,18 +77,7 @@ Queue commands(20);
 uint8_t step_init()
 {
 
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
-  RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
-
-  GPIOB->AFR[0] |= STEP_PIN_AF1;
-  GPIOB->MODER |= STEP_PIN_AF_MODE;
-
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOJEN;
-  RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
-
-  GPIOJ->AFR[0] |= STEP_PIN_AF1;
-  GPIOJ->MODER |= STEP_PIN_AF_MODE;
-
+ 
   // Configure output pin for stepper 1 step pin
   GPIO_InitTypeDef GPIO_initstruct;
   GPIO_initstruct.Pin = GPIO_PIN_8;
@@ -101,7 +90,35 @@ uint8_t step_init()
   GPIO_initstruct.Mode = GPIO_MODE_AF_PP;
   GPIO_initstruct.Speed = GPIO_SPEED_LOW;
   HAL_GPIO_Init(GPIOF, &GPIO_initstruct);
-  
+   
+  // Configure output pin for stepper 1 direction
+
+  GPIO_initstruct.Pin = GPIO_PIN_0;
+  GPIO_initstruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_initstruct.Speed = GPIO_SPEED_LOW;
+  HAL_GPIO_Init(GPIOJ, &GPIO_initstruct);
+
+  // Configure output pin for stepper 2 direction
+  GPIO_initstruct.Pin = GPIO_PIN_3;
+  GPIO_initstruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_initstruct.Speed = GPIO_SPEED_LOW;
+  HAL_GPIO_Init(GPIOI, &GPIO_initstruct); 
+
+   // Configure output pin for stepper 1 enable
+
+  GPIO_initstruct.Pin = GPIO_PIN_4;
+  GPIO_initstruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_initstruct.Speed = GPIO_SPEED_LOW;
+  HAL_GPIO_Init(GPIOJ, &GPIO_initstruct);
+
+  // Configure output pin for stepper 2 enable
+  GPIO_initstruct.Pin = GPIO_PIN_12;
+  GPIO_initstruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_initstruct.Speed = GPIO_SPEED_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_initstruct); 
+
+
+
 
  
 
@@ -119,14 +136,11 @@ int main(void)
   /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
 
-  step_init();
-
   MX_DMA2D_Init();
   MX_DSIHOST_DSI_Init();
   MX_TIM10_Init();
   MX_TIM3_Init();
   MX_TIM11_Init();
-
 
   //lvgl initialisation
   
@@ -135,6 +149,8 @@ int main(void)
   touchpad_init();
   setup_ui(&guider_ui);
   events_init(&guider_ui);
+
+  step_init();
 
 
   //initial command for stepper initialisation - link to timers and irq handler
@@ -145,12 +161,12 @@ int main(void)
   motor1.setSpeed(150);
   motor1.enableInterrupt();
 
-  motor2.timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
+  motor1.timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
   motor2.setDirPin(GPIOI, 3);
   motor2.setSleepPin(GPIOB, 8);
   motor2.setSpeed(150);
   motor2.enableInterrupt();
-
+ 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
 

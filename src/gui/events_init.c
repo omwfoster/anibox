@@ -11,13 +11,24 @@
 #include <stdio.h>
 #include "lvgl.h"
 
-
-void events_init_screen(lv_ui *ui)
+static void screen_roller_1_event_handler (lv_event_t *e)
 {
-	lv_obj_add_event_cb(ui->screen_spinner_1, screen_spinner_1_event_handler, LV_EVENT_ALL, NULL);
+	lv_event_code_t code = lv_event_get_code(e);
+
+	switch (code) {
+	case LV_EVENT_VALUE_CHANGED:
+	{
+		
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 void events_init(lv_ui *ui)
 {
+    lv_obj_add_event_cb(ui->screen_roller_1, screen_roller_1_event_handler, LV_EVENT_ALL, NULL);
+
 
 }
