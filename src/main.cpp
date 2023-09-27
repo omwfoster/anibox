@@ -40,6 +40,7 @@ static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
 
 lv_ui guider_ui;
+void screen_roller_1_event_callback();
 
 // Thread Handles
 osThreadId lvgl_tickHandle;
@@ -64,7 +65,16 @@ void LGVLTick(void const *argument)
   }
 }
 
-#define STEP_PIN (1 << 5)
+#define STEP1_GPIO_OUTPUT GPIOC
+#define STEP1_OUTPUT_PIN  GPIO_PIN_8
+#define STEP2_GPIO_OUTPUT GPIOF
+#define STEP2_OUTPUT_PIN  GPIO_PIN_7
+
+#define STEP1_GPIO_DIR    GPIOJ
+#define STEP1_DIR_PIN     GPIO_PIN_0
+#define STEP2_GPIO_DIR    GPIOI
+#define STEP2_DIR_PIN     GPIO_PIN_3
+
 #define STEP_PIN_AF_MODE (1 << 11)
 #define STEP_PIN_AF1 (1 << 20)
 
@@ -80,16 +90,16 @@ uint8_t step_init()
  
   // Configure output pin for stepper 1 step pin
   GPIO_InitTypeDef GPIO_initstruct;
-  GPIO_initstruct.Pin = GPIO_PIN_8;
+  GPIO_initstruct.Pin = STEP1_OUTPUT_PIN;
   GPIO_initstruct.Mode = GPIO_MODE_AF_PP;
   GPIO_initstruct.Speed = GPIO_SPEED_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_initstruct);
+  HAL_GPIO_Init(STEP1_GPIO_OUTPUT, &GPIO_initstruct);
 
-  // Configure output pin for stepper 1 step pin
-  GPIO_initstruct.Pin = GPIO_PIN_7;
+  // Configure output pin for stepper 2 step pin
+  GPIO_initstruct.Pin = STEP2_OUTPUT_PIN;
   GPIO_initstruct.Mode = GPIO_MODE_AF_PP;
   GPIO_initstruct.Speed = GPIO_SPEED_LOW;
-  HAL_GPIO_Init(GPIOF, &GPIO_initstruct);
+  HAL_GPIO_Init(STEP2_GPIO_OUTPUT, &GPIO_initstruct);
    
   // Configure output pin for stepper 1 direction
 
@@ -116,10 +126,6 @@ uint8_t step_init()
   GPIO_initstruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_initstruct.Speed = GPIO_SPEED_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_initstruct); 
-
-
-
-
  
 
 }
@@ -587,21 +593,7 @@ static void CPU_CACHE_Enable(void)
   SCB_EnableDCache();
 }
 
-void screen_spinner_1_event_handler(lv_event_t *e)
-{
-  lv_event_code_t code = lv_event_get_code(e);
 
-  switch (code)
-  {
-  case LV_EVENT_VALUE_CHANGED:
-  {
-    commands.push(e->code);
-    break;
-  }
-  default:
-    break;
-  }
-}
 
 extern "C" void TIM3_IRQHandler(void);
 
@@ -613,6 +605,32 @@ extern "C" void TIM11_IRQHandler(void);
 
 void TIM11_IRQHandler(void){
     motor2.interruptHandler();
+}
+
+void screen_roller_1_event_callback(uint8_t speed)
+{
+  
+  if(speed < 0)
+  {
+    motor1.setDir(false);
+  }
+  else
+  {
+    motor1.setDir(true);
+  }
+
+    motor1.setSpeed(speed);
+}
+
+void button_1_event_callback(bool active)
+{
+  
+  if(active)
+  {
+  HAL_GPIO_WritePin(STEP1_GPIO_OUTPUT, STEP1_OUTPUT_PIN, GPIO_PIN_SET);
+  }
+
+   
 }
 
 #ifdef USE_FULL_ASSERT

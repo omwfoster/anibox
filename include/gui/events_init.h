@@ -14,8 +14,11 @@
 extern "C" {
 #endif
 
+#define LV_USE_BTN 1
 #include "gui_guider.h"
 
+extern  void screen_roller_1_event_callback(uint8_t);
+extern  void button_1_event_callback(bool);
 void events_init(lv_ui *ui);
 
 void events_init_screen(lv_ui *ui);

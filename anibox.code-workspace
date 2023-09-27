@@ -24,7 +24,8 @@
 			"lv_demo_widgets.h": "c",
 			"gui_guider.h": "c",
 			"widgets_init.h": "c",
-			"queue.h": "c"
+			"queue.h": "c",
+			"events_init.h": "c"
 		}
 	}
 }
