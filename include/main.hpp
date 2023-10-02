@@ -41,6 +41,16 @@ void Error_Handler(void);
 int main(void);
 
 
+#define STEP1_GPIO_OUTPUT GPIOC
+#define STEP1_OUTPUT_PIN  GPIO_PIN_8
+#define STEP2_GPIO_OUTPUT GPIOF
+#define STEP2_OUTPUT_PIN  GPIO_PIN_7
+
+#define STEP1_GPIO_DIR    GPIOJ
+#define STEP1_DIR_PIN     GPIO_PIN_0
+#define STEP2_GPIO_DIR    GPIOI
+#define STEP2_DIR_PIN     GPIO_PIN_3
+
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 #define USE_RTOS_SYSTICK

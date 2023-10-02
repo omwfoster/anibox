@@ -22,18 +22,17 @@ typedef struct
 	bool screen_del;
 	lv_obj_t *screen_cont_1;
 	lv_obj_t *screen_cont_2;
+	lv_obj_t *screen_step_1_enable_cb;
+	lv_obj_t *screen_step_1_microstep_cb;
+	lv_obj_t *screen_step_1_roll_speed;
+	lv_obj_t *screen_step_1_KILL;
+	lv_obj_t *screen_step_1_KILL_label;
+	lv_obj_t *screen_cont_3;
 	lv_obj_t *screen_cb_2;
-	lv_obj_t *screen_cb_3;
+	lv_obj_t *screen_cb_1;
 	lv_obj_t *screen_roller_1;
 	lv_obj_t *screen_btn_1;
 	lv_obj_t *screen_btn_1_label;
-	lv_obj_t *screen_cont_3;
-	lv_obj_t *screen_cb_5;
-	lv_obj_t *screen_cb_4;
-	lv_obj_t *screen_roller_2;
-	lv_obj_t *screen_btn_2;
-	lv_obj_t *screen_btn_2_label;
-	lv_obj_t *screen_canvas_1;
 }lv_ui;
 
 void ui_init_style(lv_style_t * style);

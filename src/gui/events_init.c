@@ -12,6 +12,7 @@
 #include "lvgl.h"
 
 
+
 static void screen_roller_1_event_handler (lv_event_t *e)
 {
 	lv_event_code_t code = lv_event_get_code(e);
@@ -19,7 +20,6 @@ static void screen_roller_1_event_handler (lv_event_t *e)
 	switch (code) {
 	case LV_EVENT_VALUE_CHANGED:
 	{
-		screen_roller_1_event_callback(code);
 		break;
 	}
 	default:
@@ -29,15 +29,22 @@ static void screen_roller_1_event_handler (lv_event_t *e)
 
 static void button1_event_handler(lv_event_t *e)
 {
-	button_1_event_callback(true);
+//	button_1_event_callback(true);
 }
 void events_init_screen(lv_ui *ui)
 {
 	lv_obj_add_event_cb(ui->screen_roller_1, screen_roller_1_event_handler, LV_EVENT_ALL, NULL);
 	lv_obj_add_event_cb(ui->screen_btn_1,button1_event_handler, LV_EVENT_CLICKED, NULL);
+	lv_obj_add_event_cb(ui->screen_cb_2,button1_event_handler, LV_EVENT_CLICKED, NULL);
+
 }
 
 void events_init(lv_ui *ui)
 {
 
+}
+
+void set_ui_callback()
+{
+//	set_speed_callback = &screen_roller_1_event_callback;
 }

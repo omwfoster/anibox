@@ -25,7 +25,8 @@
 			"gui_guider.h": "c",
 			"widgets_init.h": "c",
 			"queue.h": "c",
-			"events_init.h": "c"
+			"events_init.h": "c",
+			"custom.h": "c"
 		}
 	}
 }

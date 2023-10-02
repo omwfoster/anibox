@@ -160,3 +160,10 @@ void Stepper::wakeup(){
     _state = STEPPER_STATE_IDLE;
     _sleepPort->ODR |= 1 << _sleepPin;
 }
+
+CallbackFunction GetCallbackFunction() {
+        return [](void* data) {
+            Stepper* instance = static_cast<Stepper*>(data);
+        //    instance->MyCallbackFunction();
+        };
+    }

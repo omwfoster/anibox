@@ -11,8 +11,7 @@
 #include "gui_guider.h"
 #include "events_init.h"
 #include "custom.h"
-#include "stepper/stepper.h"
-#include "stepper/queue.h"
+#include "stepper/stepper_callback_wrapper.h"
 
 DMA2D_HandleTypeDef hdma2d;
 DSI_HandleTypeDef hdsi;
@@ -40,7 +39,9 @@ static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
 
 lv_ui guider_ui;
-void screen_roller_1_event_callback();
+void screen_roller_1_event_callback(uint8_t speed);
+
+
 
 // Thread Handles
 osThreadId lvgl_tickHandle;
@@ -78,9 +79,9 @@ void LGVLTick(void const *argument)
 #define STEP_PIN_AF_MODE (1 << 11)
 #define STEP_PIN_AF1 (1 << 20)
 
-Stepper motor1(400);
-Stepper motor2(400);
-Queue commands(20);
+//Stepper motor1(400);
+//Stepper motor2(400);
+//Queue commands(20);
 
 // J4 and b
 // TODO: define correct pins
@@ -161,7 +162,7 @@ int main(void)
 
   //initial command for stepper initialisation - link to timers and irq handler
 
-  motor1.timerInit(TIM3, 3 , TIM3_IRQn , 16000000);
+ /*  motor1.timerInit(TIM3, 3 , TIM3_IRQn , 16000000);
   motor1.setDirPin(GPIOJ, 0);
   motor1.setSleepPin(GPIOB, 8);
   motor1.setSpeed(150);
@@ -171,7 +172,7 @@ int main(void)
   motor2.setDirPin(GPIOI, 3);
   motor2.setSleepPin(GPIOB, 8);
   motor2.setSpeed(150);
-  motor2.enableInterrupt();
+  motor2.enableInterrupt(); */
  
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
@@ -191,10 +192,7 @@ int main(void)
   // anibox_step_gpio();// anibox_step_tim();
   osKernelStart();
 
-  while (1)
-  {
-    osDelay(1);
-  }
+
 }
 
 /**
@@ -598,40 +596,15 @@ static void CPU_CACHE_Enable(void)
 extern "C" void TIM3_IRQHandler(void);
 
 void TIM3_IRQHandler(void){
-    motor1.interruptHandler();
+ //   motor1.interruptHandler();
 }
 
 extern "C" void TIM11_IRQHandler(void);
 
 void TIM11_IRQHandler(void){
-    motor2.interruptHandler();
+ //   motor2.interruptHandler();
 }
 
-void screen_roller_1_event_callback(uint8_t speed)
-{
-  
-  if(speed < 0)
-  {
-    motor1.setDir(false);
-  }
-  else
-  {
-    motor1.setDir(true);
-  }
-
-    motor1.setSpeed(speed);
-}
-
-void button_1_event_callback(bool active)
-{
-  
-  if(active)
-  {
-  HAL_GPIO_WritePin(STEP1_GPIO_OUTPUT, STEP1_OUTPUT_PIN, GPIO_PIN_SET);
-  }
-
-   
-}
 
 #ifdef USE_FULL_ASSERT
 /**

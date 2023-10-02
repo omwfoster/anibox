@@ -1,4 +1,10 @@
+
+#ifndef STEPPER_H
+#define STEPPER_H
+
+
 #include "stm32f769xx.h"
+
 
 enum {
     STEPPER_DIR_COUNTERCLOCKWISE,
@@ -12,8 +18,12 @@ enum {
     STEPPER_STATE_STABILIZING
 };
 
+
+
 #define WAIT_TIME       25
 #define PULSE_LENGTH    10
+
+
 
 class Stepper {
 public:
@@ -49,3 +59,6 @@ private:
     GPIO_TypeDef* _sleepPort;
     int _sleepPin;
 };
+
+
+#endif /* EVENT_CB_H_ */
