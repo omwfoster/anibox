@@ -27,7 +27,9 @@ enum {
 
 class Stepper {
 public:
-    Stepper(int stepsPerRevolution);
+    Stepper();
+    void stepsPerRevolution(int);
+    void SetCallback(callback, userData);
     void timerInit(TIM_TypeDef* timer, int timerChannel, IRQn_Type timerInt, unsigned long APBClockFreq);
     void setDirPin(GPIO_TypeDef* dirPort, int dirPin);
     void setSleepPin(GPIO_TypeDef* sleepPort, int sleepPin);

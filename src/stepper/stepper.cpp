@@ -1,8 +1,11 @@
-#include "stepper/stepper.h"
+#include "stepper/stepper.hpp"
 #include <math.h>
 #include <stdlib.h>
 
-Stepper::Stepper(int stepsPerRevolution){
+Stepper::Stepper(){
+    _state = STEPPER_STATE_IDLE;
+}
+void Stepper::stepsPerRevolution(int stepsPerRevolution){
     _stepsPerRevolution = stepsPerRevolution;
     _state = STEPPER_STATE_IDLE;
 }
@@ -161,9 +164,4 @@ void Stepper::wakeup(){
     _sleepPort->ODR |= 1 << _sleepPin;
 }
 
-CallbackFunction GetCallbackFunction() {
-        return [](void* data) {
-            Stepper* instance = static_cast<Stepper*>(data);
-        //    instance->MyCallbackFunction();
-        };
-    }
+

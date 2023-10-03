@@ -26,7 +26,9 @@
 			"widgets_init.h": "c",
 			"queue.h": "c",
 			"events_init.h": "c",
-			"custom.h": "c"
+			"custom.h": "c",
+			"stepper.hpp": "cpp",
+			"stepper_callback_wrapper.h": "c"
 		}
 	}
 }
