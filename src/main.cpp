@@ -79,14 +79,17 @@ void LGVLTick(void const *argument)
 #define STEP_PIN_AF_MODE (1 << 11)
 #define STEP_PIN_AF1 (1 << 20)
 
-//Stepper motor1(400);
-//Stepper motor2(400);
+Stepper *  motor1;
+Stepper *  motor2;
 //Queue commands(20);
 
 // J4 and b
 // TODO: define correct pins
 uint8_t step_init()
 {
+  motor1 = new Stepper();
+  motor2 = new Stepper();
+  bool dir1 = motor1->getDir();
 
  
   // Configure output pin for stepper 1 step pin
@@ -162,17 +165,17 @@ int main(void)
 
   //initial command for stepper initialisation - link to timers and irq handler
 
- /*  motor1.timerInit(TIM3, 3 , TIM3_IRQn , 16000000);
-  motor1.setDirPin(GPIOJ, 0);
-  motor1.setSleepPin(GPIOB, 8);
-  motor1.setSpeed(150);
-  motor1.enableInterrupt();
+  motor1->timerInit(TIM3, 3 , TIM3_IRQn , 16000000);
+  motor1->setDirPin(GPIOJ, 0);
+  motor1->setSleepPin(GPIOB, 8);
+  motor1->setSpeed(150);
+  motor1->enableInterrupt();
 
-  motor1.timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
-  motor2.setDirPin(GPIOI, 3);
-  motor2.setSleepPin(GPIOB, 8);
-  motor2.setSpeed(150);
-  motor2.enableInterrupt(); */
+  motor2->timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
+  motor2->setDirPin(GPIOI, 3);
+  motor2->setSleepPin(GPIOB, 8);
+  motor2->setSpeed(150);
+  motor2->enableInterrupt(); 
  
   /* Create the thread(s) */
   /* definition and creation of defaultTask */

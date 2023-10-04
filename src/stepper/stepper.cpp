@@ -5,6 +5,12 @@
 Stepper::Stepper(){
     _state = STEPPER_STATE_IDLE;
 }
+
+void Stepper::SetCallback(CallbackFunction v, void * userData)
+{
+    this->callback_ = v;
+
+}
 void Stepper::stepsPerRevolution(int stepsPerRevolution){
     _stepsPerRevolution = stepsPerRevolution;
     _state = STEPPER_STATE_IDLE;

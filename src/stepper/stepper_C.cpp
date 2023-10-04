@@ -18,7 +18,7 @@ extern "C"
     void Step_wrap_SetCallback(Stepper *obj, CallbackFunction callback, void *userData)
     {
         Stepper *instance = reinterpret_cast<Stepper *>(obj);
-     //   instance->SetCallback(callback, userData);
+        instance->SetCallback(callback, userData);
         instance->stop();
     }
 
