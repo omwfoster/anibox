@@ -11,7 +11,7 @@
 #include "gui_guider.h"
 #include "events_init.h"
 #include "custom.h"
-#include "stepper/stepper_callback_wrapper.h"
+#include "stepper/stepper_C.h"
 
 DMA2D_HandleTypeDef hdma2d;
 DSI_HandleTypeDef hdsi;

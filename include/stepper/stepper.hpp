@@ -23,13 +23,16 @@ enum {
 #define WAIT_TIME       25
 #define PULSE_LENGTH    10
 
-
+typedef void (*CallbackFunction)(void* userData);
 
 class Stepper {
 public:
     Stepper();
+    CallbackFunction callback_;
+    void* userData_;
     void stepsPerRevolution(int);
-    void SetCallback(callback, userData);
+   // void SetCallback(callback, userData);
+   // void Step_wrap_TriggerCallback(Step_wrap_* obj);
     void timerInit(TIM_TypeDef* timer, int timerChannel, IRQn_Type timerInt, unsigned long APBClockFreq);
     void setDirPin(GPIO_TypeDef* dirPort, int dirPin);
     void setSleepPin(GPIO_TypeDef* sleepPort, int sleepPin);
@@ -46,6 +49,7 @@ public:
     volatile int getState();
     void sleep();
     void wakeup();
+    
 private:
     int _stepsPerRevolution;
     int _speed;
