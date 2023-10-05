@@ -40,6 +40,8 @@ static void CPU_CACHE_Enable(void);
 
 lv_ui guider_ui;
 void screen_roller_1_event_callback(uint8_t speed);
+extern "C" void TIM3_IRQHandler(void);
+extern "C" void TIM11_IRQHandler(void);
 
 
 
@@ -169,6 +171,7 @@ int main(void)
   motor1->setDirPin(GPIOJ, 0);
   motor1->setSleepPin(GPIOB, 8);
   motor1->setSpeed(150);
+  motor1->setCallback(screen_roller_1_event_callback);
   motor1->enableInterrupt();
 
   motor2->timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
@@ -596,13 +599,13 @@ static void CPU_CACHE_Enable(void)
 
 
 
-extern "C" void TIM3_IRQHandler(void);
+
 
 void TIM3_IRQHandler(void){
  //   motor1.interruptHandler();
 }
 
-extern "C" void TIM11_IRQHandler(void);
+
 
 void TIM11_IRQHandler(void){
  //   motor2.interruptHandler();
