@@ -12,6 +12,7 @@
 #include "events_init.h"
 #include "custom.h"
 #include "stepper/stepper_C.h"
+#include "beam_breaker/beam_breaker.h"
 
 DMA2D_HandleTypeDef hdma2d;
 DSI_HandleTypeDef hdsi;
@@ -162,6 +163,7 @@ int main(void)
   tft_init();
   touchpad_init();
   setup_ui(&guider_ui);
+  beam_breaker * bb = new beam_breaker(GPIOA_BASE,GPIO_PIN_2);
   
   events_init_screen(&guider_ui);
 
