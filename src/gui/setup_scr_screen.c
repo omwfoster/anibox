@@ -138,7 +138,7 @@ void setup_scr_screen(lv_ui *ui)
 //	lv_obj_set_style_text_font(ui->screen_step1_roll_speed, &lv_font_arial_12, LV_PART_SELECTED|LV_STATE_DEFAULT);
 	lv_obj_set_style_text_align(ui->screen_step_1_roll_speed, LV_TEXT_ALIGN_CENTER, LV_PART_SELECTED|LV_STATE_DEFAULT);
 
-	//Write codes screen_step1_KILL
+/* 	//Write codes screen_step1_KILL
 	ui->screen_step_1_KILL = lv_btn_create(ui->screen_cont_2);
 	ui->screen_step_1_KILL = lv_label_create(ui->screen_step_1_KILL);
 	lv_label_set_text(ui->screen_step_1_KILL, "Stop");
@@ -158,7 +158,7 @@ void setup_scr_screen(lv_ui *ui)
 	lv_obj_set_style_text_color(ui->screen_step_1_KILL, lv_color_hex(0xffffff), LV_PART_MAIN|LV_STATE_DEFAULT);
 //	lv_obj_set_style_text_font(ui->screen_step1_KILL, &lv_font_arial_16, LV_PART_MAIN|LV_STATE_DEFAULT);
 	lv_obj_set_style_text_align(ui->screen_step_1_KILL, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN|LV_STATE_DEFAULT);
-
+ */
 	//Write codes screen_cont_3
 	ui->screen_cont_3 = lv_obj_create(ui->screen_cont_2);
 	lv_obj_set_pos(ui->screen_cont_3, 273, 0);

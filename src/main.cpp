@@ -39,7 +39,9 @@ static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
 
 lv_ui guider_ui;
-void screen_roller_1_event_callback(uint8_t speed);
+
+
+void screen_roller_1_event_handler(lv_event_t *e);
 extern "C" void TIM3_IRQHandler(void);
 extern "C" void TIM11_IRQHandler(void);
 
@@ -91,7 +93,7 @@ uint8_t step_init()
 {
   motor1 = new Stepper();
   motor2 = new Stepper();
-  bool dir1 = motor1->getDir();
+  
 
  
   // Configure output pin for stepper 1 step pin
@@ -138,7 +140,7 @@ uint8_t step_init()
 
 int main(void)
 {
-
+  
   CPU_CACHE_Enable();
 
   HAL_Init();
@@ -160,7 +162,8 @@ int main(void)
   tft_init();
   touchpad_init();
   setup_ui(&guider_ui);
-  events_init(&guider_ui);
+  
+  events_init_screen(&guider_ui);
 
   step_init();
 
@@ -171,7 +174,6 @@ int main(void)
   motor1->setDirPin(GPIOJ, 0);
   motor1->setSleepPin(GPIOB, 8);
   motor1->setSpeed(150);
-  motor1->setCallback(screen_roller_1_event_callback);
   motor1->enableInterrupt();
 
   motor2->timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
@@ -564,6 +566,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE END Callback 1 */
 }
 
+
+
 void ui_thread(void const *arg)
 {
 
@@ -597,18 +601,32 @@ static void CPU_CACHE_Enable(void)
   SCB_EnableDCache();
 }
 
+/// @brief 
+/// @param e 
+void screen_roller_1_event_handler (lv_event_t *e)
+{
+  lv_event_code_t code = lv_event_get_code(e);
+  lv_obj_t * obj = lv_event_get_target(e);
+  if(code == LV_EVENT_VALUE_CHANGED) {
+    char buf[32];
+    lv_roller_get_selected_str(obj, buf, sizeof(buf));
+    motor1->setSpeed(100);
+  }
+}
+
 
 
 
 
 void TIM3_IRQHandler(void){
- //   motor1.interruptHandler();
+    motor1->interruptHandler();
 }
 
 
 
 void TIM11_IRQHandler(void){
- //   motor2.interruptHandler();
+    motor2->interruptHandler();
+
 }
 
 

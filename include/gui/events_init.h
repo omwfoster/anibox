@@ -20,12 +20,12 @@ extern "C" {
 
 
 
+extern void screen_roller_1_event_handler(lv_event_t *e);
 
-//void (* set_speed_callback)(uint8_t speed, uint8_t motor);
-//extern  void screen_roller_1_event_callback(uint8_t,uint8_t);
 
 
 void events_init(lv_ui *ui);
+
 
 void events_init_screen(lv_ui *ui);
 
