@@ -46,6 +46,19 @@ void screen_roller_1_event_handler(lv_event_t *e);
 extern "C" void TIM3_IRQHandler(void);
 extern "C" void TIM11_IRQHandler(void);
 
+rcl_publisher_t publisher;
+std_msgs__msg__Int32 msg;
+
+void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
+{
+	(void) last_call_time;
+	if (timer != NULL) {
+		RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
+		//printf("Sent: %d\n", msg.data);
+		msg.data++;
+	}
+}
+
 
 
 // Thread Handles
@@ -163,7 +176,7 @@ int main(void)
   tft_init();
   touchpad_init();
   setup_ui(&guider_ui);
-  beam_breaker * bb = new beam_breaker(GPIOA_BASE,GPIO_PIN_2);
+//  beam_breaker * bb = new beam_breaker(GPIOA_BASE,GPIO_PIN_2);
   
   events_init_screen(&guider_ui);
 
