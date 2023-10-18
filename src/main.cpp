@@ -64,6 +64,10 @@ void microros_deallocate(void * pointer, void * state);
 void * microros_reallocate(void * pointer, size_t size, void * state);
 void * microros_zero_allocate(size_t number_of_elements, size_t size_of_element, void * state);
 
+
+USBD_HandleTypeDef USBD_Device;
+
+
 void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 {
 	(void) last_call_time;
@@ -617,14 +621,14 @@ void uros_thread(void const * arg)
     /* Infinite loop */
     // micro-ROS configuration
 
-/*     rmw_uros_set_custom_transport(
+/*      rmw_uros_set_custom_transport(
       true,
       (void *) &huart2,
       cubemx_transport_open,
       cubemx_transport_close,
       cubemx_transport_write,
-      cubemx_transport_read); */
-
+      cubemx_transport_read); 
+ */
     rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
     freeRTOS_allocator.allocate = microros_allocate;
     freeRTOS_allocator.deallocate = microros_deallocate;
