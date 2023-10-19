@@ -222,6 +222,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   uint32_t buffptr;
   uint32_t buffsize;
+
+    if (htim->Instance == TIM6)
+  {
+    HAL_IncTick();
+  }
   
   if(UserTxBufPtrOut != UserTxBufPtrIn)
   {
