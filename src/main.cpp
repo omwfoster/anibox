@@ -1,7 +1,7 @@
 // anibox - research box controller
 // by oliver foster - omwfoster
 // published under GPL
-// untested and with zero liability 
+// untested and with zero liability
 
 #include "main.hpp"
 #include "string.h"
@@ -18,6 +18,10 @@
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
 #include <rmw_microros/custom_transport.h>
+#include <rmw_microxrcedds_c/config.h>
+#include <rmw_microros/rmw_microros.h>
+
+#include <std_msgs/msg/int32.h>
 
 DMA2D_HandleTypeDef hdma2d;
 DSI_HandleTypeDef hdsi;
@@ -36,7 +40,6 @@ static void MX_TIM10_Init(void);
 static void MX_TIM3_Init();
 static void MX_TIM11_Init();
 
-void StartDefaultTask(void const *argument);
 void ui_thread(void const *arg);
 void LVGLTimer(void const *arg);
 void LGVLTick(void const *arg);
@@ -46,7 +49,7 @@ static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
 
 lv_ui guider_ui;
-
+extern UART_HandleTypeDef huart2;
 
 void screen_roller_1_event_handler(lv_event_t *e);
 extern "C" void TIM3_IRQHandler(void);
@@ -54,31 +57,28 @@ extern "C" void TIM11_IRQHandler(void);
 
 rcl_publisher_t publisher;
 std_msgs__msg__Int32 msg;
-bool cubemx_transport_open(struct uxrCustomTransport * transport);
-bool cubemx_transport_close(struct uxrCustomTransport * transport);
-size_t cubemx_transport_write(struct uxrCustomTransport* transport, const uint8_t * buf, size_t len, uint8_t * err);
-size_t cubemx_transport_read(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err);
+bool cubemx_transport_open(struct uxrCustomTransport *transport);
+bool cubemx_transport_close(struct uxrCustomTransport *transport);
+size_t cubemx_transport_write(struct uxrCustomTransport *transport, const uint8_t *buf, size_t len, uint8_t *err);
+size_t cubemx_transport_read(struct uxrCustomTransport *transport, uint8_t *buf, size_t len, int timeout, uint8_t *err);
 
-void * microros_allocate(size_t size, void * state);
-void microros_deallocate(void * pointer, void * state);
-void * microros_reallocate(void * pointer, size_t size, void * state);
-void * microros_zero_allocate(size_t number_of_elements, size_t size_of_element, void * state);
-
+void *microros_allocate(size_t size, void *state);
+void microros_deallocate(void *pointer, void *state);
+void *microros_reallocate(void *pointer, size_t size, void *state);
+void *microros_zero_allocate(size_t number_of_elements, size_t size_of_element, void *state);
 
 USBD_HandleTypeDef USBD_Device;
 
-
-void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
+void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
 {
-	(void) last_call_time;
-	if (timer != NULL) {
-		RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
-		//printf("Sent: %d\n", msg.data);
-		msg.data++;
-	}
+  (void)last_call_time;
+  if (timer != NULL)
+  {
+    RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
+    // printf("Sent: %d\n", msg.data);
+    msg.data++;
+  }
 }
-
-
 
 // Thread Handles
 osThreadId lvgl_tickHandle;
@@ -104,21 +104,21 @@ void LGVLTick(void const *argument)
 }
 
 #define STEP1_GPIO_OUTPUT GPIOC
-#define STEP1_OUTPUT_PIN  GPIO_PIN_8
+#define STEP1_OUTPUT_PIN GPIO_PIN_8
 #define STEP2_GPIO_OUTPUT GPIOF
-#define STEP2_OUTPUT_PIN  GPIO_PIN_7
+#define STEP2_OUTPUT_PIN GPIO_PIN_7
 
-#define STEP1_GPIO_DIR    GPIOJ
-#define STEP1_DIR_PIN     GPIO_PIN_0
-#define STEP2_GPIO_DIR    GPIOI
-#define STEP2_DIR_PIN     GPIO_PIN_3
+#define STEP1_GPIO_DIR GPIOJ
+#define STEP1_DIR_PIN GPIO_PIN_0
+#define STEP2_GPIO_DIR GPIOI
+#define STEP2_DIR_PIN GPIO_PIN_3
 
 #define STEP_PIN_AF_MODE (1 << 11)
 #define STEP_PIN_AF1 (1 << 20)
 
-Stepper *  motor1;
-Stepper *  motor2;
-//Queue commands(20);
+Stepper *motor1;
+Stepper *motor2;
+// Queue commands(20);
 
 // J4 and b
 // TODO: define correct pins
@@ -126,9 +126,7 @@ uint8_t step_init()
 {
   motor1 = new Stepper();
   motor2 = new Stepper();
-  
 
- 
   // Configure output pin for stepper 1 step pin
   GPIO_InitTypeDef GPIO_initstruct;
   GPIO_initstruct.Pin = STEP1_OUTPUT_PIN;
@@ -141,7 +139,7 @@ uint8_t step_init()
   GPIO_initstruct.Mode = GPIO_MODE_AF_PP;
   GPIO_initstruct.Speed = GPIO_SPEED_LOW;
   HAL_GPIO_Init(STEP2_GPIO_OUTPUT, &GPIO_initstruct);
-   
+
   // Configure output pin for stepper 1 direction
 
   GPIO_initstruct.Pin = GPIO_PIN_0;
@@ -153,9 +151,9 @@ uint8_t step_init()
   GPIO_initstruct.Pin = GPIO_PIN_3;
   GPIO_initstruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_initstruct.Speed = GPIO_SPEED_LOW;
-  HAL_GPIO_Init(GPIOI, &GPIO_initstruct); 
+  HAL_GPIO_Init(GPIOI, &GPIO_initstruct);
 
-   // Configure output pin for stepper 1 enable
+  // Configure output pin for stepper 1 enable
 
   GPIO_initstruct.Pin = GPIO_PIN_4;
   GPIO_initstruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -166,14 +164,14 @@ uint8_t step_init()
   GPIO_initstruct.Pin = GPIO_PIN_12;
   GPIO_initstruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_initstruct.Speed = GPIO_SPEED_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_initstruct); 
- 
+  HAL_GPIO_Init(GPIOA, &GPIO_initstruct);
 
+  return 1;
 }
 
 int main(void)
 {
-  
+
   CPU_CACHE_Enable();
 
   HAL_Init();
@@ -189,22 +187,33 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM11_Init();
 
-  //lvgl initialisation
-  
+  // lvgl initialisation
+
   lv_init();
   tft_init();
   touchpad_init();
   setup_ui(&guider_ui);
-//  beam_breaker * bb = new beam_breaker(GPIOA_BASE,GPIO_PIN_2);
-  
+  //  beam_breaker * bb = new beam_breaker(GPIOA_BASE,GPIO_PIN_2);
+
   events_init_screen(&guider_ui);
 
   step_init();
 
+  /* Init Device Library */
+  USBD_Init(&USBD_Device, &VCP_Desc, 0);
 
-  //initial command for stepper initialisation - link to timers and irq handler
+  /* Add Supported Class */
+  USBD_RegisterClass(&USBD_Device, USBD_CDC_CLASS);
 
-  motor1->timerInit(TIM3, 3 , TIM3_IRQn , 16000000);
+  /* Add CDC Interface Class */
+  USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_fops);
+
+  /* Start Device Process */
+  USBD_Start(&USBD_Device);
+
+  // initial command for stepper initialisation - link to timers and irq handler
+
+  motor1->timerInit(TIM3, 3, TIM3_IRQn, 16000000);
   motor1->setDirPin(GPIOJ, 0);
   motor1->setSleepPin(GPIOB, 8);
   motor1->setSpeed(150);
@@ -214,8 +223,8 @@ int main(void)
   motor2->setDirPin(GPIOI, 3);
   motor2->setSleepPin(GPIOB, 8);
   motor2->setSpeed(150);
-  motor2->enableInterrupt(); 
- 
+  motor2->enableInterrupt();
+
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
 
@@ -236,8 +245,6 @@ int main(void)
   /* Start scheduler */
   // anibox_step_gpio();// anibox_step_tim();
   osKernelStart();
-
-
 }
 
 /**
@@ -569,22 +576,6 @@ static void MX_TIM11_Init(void)
   HAL_TIM_MspPostInit(&htim3);
 }
 
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const *argument)
-{
-  /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-  for (;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END 5 */
-}
-
-
-
-
-
 void ui_thread(void const *arg)
 {
   while (1)
@@ -594,71 +585,70 @@ void ui_thread(void const *arg)
   }
 }
 
-void uros_thread(void const * arg)
+void uros_thread(void const *arg)
 {
 
-    /* USER CODE BEGIN StartDefaultTask */
-    /* Infinite loop */
-    // micro-ROS configuration
+  /* USER CODE BEGIN StartDefaultTask */
+  /* Infinite loop */
+  // micro-ROS configuration
 
-/*      rmw_uros_set_custom_transport(
+  rmw_uros_set_custom_transport(
       true,
-      (void *) &huart2,
+      (void *)&huart2,
       cubemx_transport_open,
       cubemx_transport_close,
       cubemx_transport_write,
-      cubemx_transport_read); 
- */
-    rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
-    freeRTOS_allocator.allocate = microros_allocate;
-    freeRTOS_allocator.deallocate = microros_deallocate;
-    freeRTOS_allocator.reallocate = microros_reallocate;
-    freeRTOS_allocator.zero_allocate =  microros_zero_allocate;
+      cubemx_transport_read);
 
-    if (!rcutils_set_default_allocator(&freeRTOS_allocator)) {
-        printf("Error on default allocators (line %d)\n", __LINE__);
-    }
+  rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
+  freeRTOS_allocator.allocate = microros_allocate;
+  freeRTOS_allocator.deallocate = microros_deallocate;
+  freeRTOS_allocator.reallocate = microros_reallocate;
+  freeRTOS_allocator.zero_allocate = microros_zero_allocate;
 
-    // micro-ROS app
+  if (!rcutils_set_default_allocator(&freeRTOS_allocator))
+  {
+    printf("Error on default allocators (line %d)\n", __LINE__);
+  }
 
-    rcl_publisher_t publisher;
-    std_msgs__msg__Int32 msg;
-    rclc_support_t support;
-    rcl_allocator_t allocator;
-    rcl_node_t node;
+  // micro-ROS app
 
-    allocator = rcl_get_default_allocator();
+  rcl_publisher_t publisher;
+  std_msgs__msg__Int32 msg;
+  rclc_support_t support;
+  rcl_allocator_t allocator;
+  rcl_node_t node;
 
-    //create init_options
-    rclc_support_init(&support, 0, NULL, &allocator);
+  allocator = rcl_get_default_allocator();
 
-    // create node
-    rclc_node_init_default(&node, "cubemx_node", "", &support);
+  // create init_options
+  rclc_support_init(&support, 0, NULL, &allocator);
 
-    // create publisher
-    rclc_publisher_init_default(
+  // create node
+  rclc_node_init_default(&node, "cubemx_node", "", &support);
+
+  // create publisher
+  rclc_publisher_init_default(
       &publisher,
       &node,
       ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
       "cubemx_publisher");
 
-    msg.data = 0;
+  msg.data = 0;
 
-    for(;;)
+  for (;;)
+  {
+    rcl_ret_t ret = rcl_publish(&publisher, &msg, NULL);
+    if (ret != RCL_RET_OK)
     {
-      rcl_ret_t ret = rcl_publish(&publisher, &msg, NULL);
-      if (ret != RCL_RET_OK)
-      {
-        printf("Error publishing (line %d)\n", __LINE__);
-      }
+      printf("Error publishing (line %d)\n", __LINE__);
+    }
 
-      msg.data++;
-      osDelay(10);
-    
+    msg.data++;
+    osDelay(10);
+
     /* USER CODE END StartDefaultTask */
-}
-
-
+  }
 }
 /**
  * @brief  This function is executed in case of error occurrence.
@@ -684,34 +674,29 @@ static void CPU_CACHE_Enable(void)
   SCB_EnableDCache();
 }
 
-/// @brief 
-/// @param e 
-void screen_roller_1_event_handler (lv_event_t *e)
+/// @brief
+/// @param e
+void screen_roller_1_event_handler(lv_event_t *e)
 {
   lv_event_code_t code = lv_event_get_code(e);
-  lv_obj_t * obj = lv_event_get_target(e);
-  if(code == LV_EVENT_VALUE_CHANGED) {
+  lv_obj_t *obj = lv_event_get_target(e);
+  if (code == LV_EVENT_VALUE_CHANGED)
+  {
     char buf[32];
     lv_roller_get_selected_str(obj, buf, sizeof(buf));
     motor1->setSpeed(100);
   }
 }
 
-
-
-
-
-void TIM3_IRQHandler(void){
-    motor1->interruptHandler();
+void TIM3_IRQHandler(void)
+{
+  motor1->interruptHandler();
 }
 
-
-
-void TIM11_IRQHandler(void){
-    motor2->interruptHandler();
-
+void TIM11_IRQHandler(void)
+{
+  motor2->interruptHandler();
 }
-
 
 #ifdef USE_FULL_ASSERT
 /**
