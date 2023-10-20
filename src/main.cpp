@@ -49,7 +49,7 @@ static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
 
 lv_ui guider_ui;
-extern UART_HandleTypeDef huart2;
+UART_HandleTypeDef huart2;
 
 void screen_roller_1_event_handler(lv_event_t *e);
 extern "C" void TIM3_IRQHandler(void);
@@ -240,7 +240,7 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(ui_thread), NULL);
 
   osThreadDef(uros_thread, uros_thread, osPriorityNormal, 0, 4096);
-  defaultTaskHandle = osThreadCreate(osThread(ui_thread), NULL);
+  defaultTaskHandle = osThreadCreate(osThread(uros_thread), NULL);
 
   /* Start scheduler */
   // anibox_step_gpio();// anibox_step_tim();
