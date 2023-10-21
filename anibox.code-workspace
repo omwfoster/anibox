@@ -29,7 +29,8 @@
 			"custom.h": "c",
 			"stepper.hpp": "cpp",
 			"stepper_callback_wrapper.h": "c",
-			"myclass.h": "c"
+			"myclass.h": "c",
+			"usbd_cdc.h": "c"
 		}
 	}
 }
