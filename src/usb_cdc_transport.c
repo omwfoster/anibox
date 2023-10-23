@@ -2,7 +2,7 @@
 
 #include "main.hpp"
 #include "cmsis_os.h"
-#include "../usbd_cdc_interface.h"
+#include "usbd_cdc_interface.h"
 #include "usbd_cdc.h"
 
 #include <unistd.h>

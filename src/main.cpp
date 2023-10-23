@@ -49,7 +49,7 @@ static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
 
 lv_ui guider_ui;
-UART_HandleTypeDef huart2;
+
 
 void screen_roller_1_event_handler(lv_event_t *e);
 extern "C" void TIM3_IRQHandler(void);
@@ -168,7 +168,7 @@ uint8_t step_init()
 
   return 1;
 }
-
+uint8_t CDC_BUF[128];
 int main(void)
 {
 
@@ -211,6 +211,11 @@ int main(void)
   /* Start Device Process */
   USBD_Start(&USBD_Device);
 
+  
+  
+
+
+
   // initial command for stepper initialisation - link to timers and irq handler
 
   motor1->timerInit(TIM3, 3, TIM3_IRQn, 16000000);
@@ -239,8 +244,8 @@ int main(void)
   osThreadDef(ui_thread, ui_thread, osPriorityNormal, 0, 4096);
   defaultTaskHandle = osThreadCreate(osThread(ui_thread), NULL);
 
-  osThreadDef(uros_thread, uros_thread, osPriorityNormal, 0, 4096);
-  defaultTaskHandle = osThreadCreate(osThread(uros_thread), NULL);
+ //   osThreadDef(uros_thread, uros_thread, osPriorityNormal, 0, 4096);
+  //  defaultTaskHandle = osThreadCreate(osThread(uros_thread), NULL);
 
   /* Start scheduler */
   // anibox_step_gpio();// anibox_step_tim();
@@ -575,6 +580,7 @@ static void MX_TIM11_Init(void)
 
   HAL_TIM_MspPostInit(&htim3);
 }
+const char *start_byte = "Hello World!\n";
 
 void ui_thread(void const *arg)
 {
@@ -592,13 +598,13 @@ void uros_thread(void const *arg)
   /* Infinite loop */
   // micro-ROS configuration
 
-  rmw_uros_set_custom_transport(
+/*   rmw_uros_set_custom_transport(
       true,
       (void *)&huart2,
       cubemx_transport_open,
       cubemx_transport_close,
       cubemx_transport_write,
-      cubemx_transport_read);
+      cubemx_transport_read); */
 
   rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
   freeRTOS_allocator.allocate = microros_allocate;
