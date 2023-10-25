@@ -4,6 +4,7 @@
 // untested and with zero liability
 
 #include "main.hpp"
+#include "MX_config.h"
 #include "string.h"
 #include "tft.h"
 #include "touchpad.h"
@@ -27,18 +28,16 @@ DMA2D_HandleTypeDef hdma2d;
 DSI_HandleTypeDef hdsi;
 RTC_HandleTypeDef hrtc;
 TIM_HandleTypeDef htim10;
-TIM_HandleTypeDef htim12;
-TIM_HandleTypeDef htim3;
-TIM_HandleTypeDef htim11;
+
 osThreadId defaultTaskHandle;
 uint8_t cec_receive_buffer[16];
+static void Error_Handler(void);
 
 void PeriphCommonClock_Config(void);
 static void MX_DMA2D_Init(void);
 static void MX_DSIHOST_DSI_Init(void);
 static void MX_TIM10_Init(void);
-static void MX_TIM3_Init();
-static void MX_TIM11_Init();
+
 
 void ui_thread(void const *arg);
 void LVGLTimer(void const *arg);
@@ -178,7 +177,7 @@ int main(void)
   MX_DSIHOST_DSI_Init();
   MX_TIM10_Init();
   MX_TIM3_Init();
-  MX_TIM11_Init();
+
 
   // lvgl initialisation
 
@@ -334,14 +333,6 @@ void PeriphCommonClock_Config(void)
  */
 static void MX_DMA2D_Init(void)
 {
-
-  /* USER CODE BEGIN DMA2D_Init 0 */
-
-  /* USER CODE END DMA2D_Init 0 */
-
-  /* USER CODE BEGIN DMA2D_Init 1 */
-
-  /* USER CODE END DMA2D_Init 1 */
   hdma2d.Instance = DMA2D;
   hdma2d.Init.Mode = DMA2D_M2M;
   hdma2d.Init.ColorMode = DMA2D_OUTPUT_ARGB8888;
@@ -360,22 +351,12 @@ static void MX_DMA2D_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN DMA2D_Init 2 */
 
-  /* USER CODE END DMA2D_Init 2 */
 }
 
-/**
- * @brief DSIHOST Initialization Function - Stm32Cube generated
- * @param None
- * @retval None
- */
+
 static void MX_DSIHOST_DSI_Init(void)
 {
-
-  /* USER CODE BEGIN DSIHOST_Init 0 */
-
-  /* USER CODE END DSIHOST_Init 0 */
 
   DSI_PLLInitTypeDef PLLInit = {0};
   DSI_HOST_TimeoutTypeDef HostTimeouts = {0};
@@ -383,9 +364,7 @@ static void MX_DSIHOST_DSI_Init(void)
   DSI_LPCmdTypeDef LPCmd = {0};
   DSI_CmdCfgTypeDef CmdCfg = {0};
 
-  /* USER CODE BEGIN DSIHOST_Init 1 */
 
-  /* USER CODE END DSIHOST_Init 1 */
   hdsi.Instance = DSI;
   hdsi.Init.AutomaticClockLaneControl = DSI_AUTO_CLK_LANE_CTRL_DISABLE;
   hdsi.Init.TXEscapeCkdiv = 4;
@@ -513,61 +492,9 @@ static void MX_TIM10_Init(void)
   HAL_TIM_MspPostInit(&htim10);
 }
 
-static void MX_TIM3_Init(void)
-{
 
-  TIM_OC_InitTypeDef sConfigOC = {0};
 
-  htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
-  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 65535;
-  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM12_Init 2 */
 
-  /* USER CODE END TIM12_Init 2 */
-  HAL_TIM_MspPostInit(&htim3);
-}
-
-static void MX_TIM11_Init(void)
-{
-
-  TIM_OC_InitTypeDef sConfigOC = {0};
-
-  htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
-  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 65535;
-  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  HAL_TIM_MspPostInit(&htim3);
-}
 const char *start_byte = "Hello World!\n";
 
 void ui_thread(void const *arg)

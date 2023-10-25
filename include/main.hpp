@@ -31,6 +31,7 @@ extern "C"
 
 #include "pins.h"
 #include "stm32f7xx_hal.h"
+
 #include "cmsis_os.h"
 
 #include <rcl/rcl.h>
@@ -77,7 +78,7 @@ extern "C"
   void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
   /* Exported functions prototypes ---------------------------------------------*/
-  static void Error_Handler(void);
+  
   int main(void);
 
 #define STEP1_GPIO_OUTPUT GPIOC
