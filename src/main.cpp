@@ -50,24 +50,17 @@ static void CPU_CACHE_Enable(void);
 
 lv_ui guider_ui;
 
-
 void screen_roller_1_event_handler(lv_event_t *e);
 extern "C" void TIM3_IRQHandler(void);
 extern "C" void TIM11_IRQHandler(void);
 
 rcl_publisher_t publisher;
 std_msgs__msg__Int32 msg;
-bool cubemx_transport_open(struct uxrCustomTransport *transport);
-bool cubemx_transport_close(struct uxrCustomTransport *transport);
-size_t cubemx_transport_write(struct uxrCustomTransport *transport, const uint8_t *buf, size_t len, uint8_t *err);
-size_t cubemx_transport_read(struct uxrCustomTransport *transport, uint8_t *buf, size_t len, int timeout, uint8_t *err);
 
-void *microros_allocate(size_t size, void *state);
-void microros_deallocate(void *pointer, void *state);
-void *microros_reallocate(void *pointer, size_t size, void *state);
-void *microros_zero_allocate(size_t number_of_elements, size_t size_of_element, void *state);
 
-USBD_HandleTypeDef USBD_Device;
+
+//USBD_HandleTypeDef hUsbDeviceFS;
+USBD_HandleTypeDef  USBD_Device;
 
 void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
 {
@@ -211,11 +204,6 @@ int main(void)
   /* Start Device Process */
   USBD_Start(&USBD_Device);
 
-  
-  
-
-
-
   // initial command for stepper initialisation - link to timers and irq handler
 
   motor1->timerInit(TIM3, 3, TIM3_IRQn, 16000000);
@@ -244,8 +232,8 @@ int main(void)
   osThreadDef(ui_thread, ui_thread, osPriorityNormal, 0, 4096);
   defaultTaskHandle = osThreadCreate(osThread(ui_thread), NULL);
 
- //   osThreadDef(uros_thread, uros_thread, osPriorityNormal, 0, 4096);
-  //  defaultTaskHandle = osThreadCreate(osThread(uros_thread), NULL);
+  osThreadDef(uros_thread, uros_thread, osPriorityNormal, 0, 4096);
+  defaultTaskHandle = osThreadCreate(osThread(uros_thread), NULL);
 
   /* Start scheduler */
   // anibox_step_gpio();// anibox_step_tim();
@@ -598,13 +586,13 @@ void uros_thread(void const *arg)
   /* Infinite loop */
   // micro-ROS configuration
 
-/*   rmw_uros_set_custom_transport(
-      true,
-      (void *)&huart2,
-      cubemx_transport_open,
-      cubemx_transport_close,
-      cubemx_transport_write,
-      cubemx_transport_read); */
+       rmw_uros_set_custom_transport(
+        true,
+        (void *)USART1,
+        cubemx_transport_open,
+        cubemx_transport_close,
+        cubemx_transport_write,
+        cubemx_transport_read);   
 
   rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
   freeRTOS_allocator.allocate = microros_allocate;
