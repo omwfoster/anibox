@@ -6,9 +6,12 @@ DSI_HandleTypeDef hdsi;
 RTC_HandleTypeDef hrtc;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim10;
+PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 static void Error_Handler();
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+extern void TIM11_IRQHandler(void);
+extern void TIM3_IRQHandler(void);
 
 void MX_TIM3_Init(void)
 {
@@ -35,6 +38,36 @@ void MX_TIM3_Init(void)
   }
 
   HAL_TIM_MspPostInit(&htim3);
+}
+
+void MX_USB_OTG_FS_PCD_Init(void)
+{
+
+  /* USER CODE BEGIN USB_OTG_FS_Init 0 */
+
+  /* USER CODE END USB_OTG_FS_Init 0 */
+
+  /* USER CODE BEGIN USB_OTG_FS_Init 1 */
+
+  /* USER CODE END USB_OTG_FS_Init 1 */
+  hpcd_USB_OTG_FS.Instance = USB_OTG_FS;
+  hpcd_USB_OTG_FS.Init.dev_endpoints = 6;
+  hpcd_USB_OTG_FS.Init.speed = PCD_SPEED_FULL;
+  hpcd_USB_OTG_FS.Init.dma_enable = DISABLE;
+  hpcd_USB_OTG_FS.Init.phy_itface = PCD_PHY_EMBEDDED;
+  hpcd_USB_OTG_FS.Init.Sof_enable = DISABLE;
+  hpcd_USB_OTG_FS.Init.low_power_enable = DISABLE;
+  hpcd_USB_OTG_FS.Init.lpm_enable = DISABLE;
+  hpcd_USB_OTG_FS.Init.vbus_sensing_enable = ENABLE;
+  hpcd_USB_OTG_FS.Init.use_dedicated_ep1 = DISABLE;
+  if (HAL_PCD_Init(&hpcd_USB_OTG_FS) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USB_OTG_FS_Init 2 */
+
+  /* USER CODE END USB_OTG_FS_Init 2 */
+
 }
 
 
@@ -194,6 +227,8 @@ void MX_TIM10_Init(void)
   /* USER CODE END TIM10_Init 2 */
   HAL_TIM_MspPostInit(&htim10);
 }
+
+
 
 
 

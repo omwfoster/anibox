@@ -24,18 +24,26 @@
 
 #include <std_msgs/msg/int32.h>
 
+extern "C" {
+  extern const int uxTopUsedPriority;
+ __attribute__((used)) const int uxTopUsedPriority = configMAX_PRIORITIES - 1;
+}
 
 
 
 
-osThreadId defaultTaskHandle;
+
+
 uint8_t cec_receive_buffer[16];
 static void Error_Handler(void);
 
 void PeriphCommonClock_Config(void);
 
 
-
+osThreadId lvgl_tickHandle;
+osThreadId lvgl_timerHandle;
+osThreadId ui_threadHandle;
+osThreadId uros_threadHandle;
 
 
 void ui_thread(void const *arg);
@@ -49,8 +57,8 @@ static void CPU_CACHE_Enable(void);
 lv_ui guider_ui;
 
 void screen_roller_1_event_handler(lv_event_t *e);
-extern "C" void TIM3_IRQHandler(void);
-extern "C" void TIM11_IRQHandler(void);
+
+
 
 rcl_publisher_t publisher;
 std_msgs__msg__Int32 msg;
@@ -72,8 +80,7 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
 }
 
 // Thread Handles
-osThreadId lvgl_tickHandle;
-osThreadId lvgl_timerHandle;
+
 
 /* LVGL timer for tasks. */
 void LVGLTimer(void const *argument)
@@ -163,6 +170,8 @@ uint8_t CDC_BUF[128];
 int main(void)
 {
 
+  volatile uint8_t ret = 0;
+
   CPU_CACHE_Enable();
 
   HAL_Init();
@@ -176,6 +185,7 @@ int main(void)
   MX_DSIHOST_DSI_Init();
   MX_TIM10_Init();
   MX_TIM3_Init();
+  MX_USB_OTG_FS_PCD_Init();
 
 
   // lvgl initialisation
@@ -191,30 +201,30 @@ int main(void)
   step_init();
 
   /* Init Device Library */
-  USBD_Init(&USBD_Device, &VCP_Desc, 0);
+  ret = USBD_Init(&USBD_Device, &VCP_Desc, 0);
 
   /* Add Supported Class */
-  USBD_RegisterClass(&USBD_Device, USBD_CDC_CLASS);
+  ret = USBD_RegisterClass(&USBD_Device, USBD_CDC_CLASS);
 
   /* Add CDC Interface Class */
-  USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_fops);
+  ret = USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_fops);
 
   /* Start Device Process */
-  USBD_Start(&USBD_Device);
+  ret = USBD_Start(&USBD_Device);
 
   // initial command for stepper initialisation - link to timers and irq handler
 
-  motor1->timerInit(TIM3, 3, TIM3_IRQn, 16000000);
-  motor1->setDirPin(GPIOJ, 0);
-  motor1->setSleepPin(GPIOB, 8);
-  motor1->setSpeed(150);
-  motor1->enableInterrupt();
+//  motor1->timerInit(TIM3, 3, TIM3_IRQn, 16000000);
+//  motor1->setDirPin(GPIOJ, 0);
+//  motor1->setSleepPin(GPIOB, 8);
+//  motor1->setSpeed(150);
+//  motor1->enableInterrupt();
 
-  motor2->timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
-  motor2->setDirPin(GPIOI, 3);
-  motor2->setSleepPin(GPIOB, 8);
-  motor2->setSpeed(150);
-  motor2->enableInterrupt();
+//  motor2->timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
+///  motor2->setDirPin(GPIOI, 3);
+//  motor2->setSleepPin(GPIOB, 8);
+//  motor2->setSpeed(150);
+//  motor2->enableInterrupt();
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
@@ -228,10 +238,10 @@ int main(void)
   lvgl_timerHandle = osThreadCreate(osThread(LVGLTimer), NULL);
 
   osThreadDef(ui_thread, ui_thread, osPriorityNormal, 0, 4096);
-  defaultTaskHandle = osThreadCreate(osThread(ui_thread), NULL);
+  ui_threadHandle = osThreadCreate(osThread(ui_thread), NULL);
 
   osThreadDef(uros_thread, uros_thread, osPriorityNormal, 0, 4096);
-  defaultTaskHandle = osThreadCreate(osThread(uros_thread), NULL);
+  uros_threadHandle = osThreadCreate(osThread(uros_thread), NULL);
 
   /* Start scheduler */
   // anibox_step_gpio();// anibox_step_tim();
@@ -443,15 +453,7 @@ void screen_roller_1_event_handler(lv_event_t *e)
   }
 }
 
-void TIM3_IRQHandler(void)
-{
-  motor1->interruptHandler();
-}
 
-void TIM11_IRQHandler(void)
-{
-  motor2->interruptHandler();
-}
 
 #ifdef USE_FULL_ASSERT
 /**

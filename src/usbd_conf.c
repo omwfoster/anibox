@@ -23,7 +23,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-PCD_HandleTypeDef hpcd;
+PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -41,7 +41,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
 {
   GPIO_InitTypeDef  GPIO_InitStruct;
 
-  if(hpcd->Instance == USB_OTG_FS)
+  if(hpcd_USB_OTG_FS.Instance == USB_OTG_FS)
   {
     /* Configure USB FS GPIOs */
     __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -54,7 +54,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
     GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    if(hpcd->Init.vbus_sensing_enable == 1)
+    if(hpcd_USB_OTG_FS.Init.vbus_sensing_enable == 1)
     {
       /* Configure VBUS Pin */
       GPIO_InitStruct.Pin = GPIO_PIN_9;
@@ -70,6 +70,8 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
     GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    
+
     /* Enable USB FS Clock */
     __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
 
@@ -79,7 +81,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
     /* Enable USBFS Interrupt */
     HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
   }
-  else if(hpcd->Instance == USB_OTG_HS)
+  else if(hpcd_USB_OTG_FS.Instance == USB_OTG_HS)
   {
 #ifdef USE_USB_HS_IN_FS
 
@@ -340,27 +342,27 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
 {
 #ifdef USE_USB_FS
   /* Set LL Driver parameters */
-  hpcd.Instance = USB_OTG_FS;
-  hpcd.Init.dev_endpoints = 6;
-  hpcd.Init.use_dedicated_ep1 = 0;
-  hpcd.Init.dma_enable = 0;
-  hpcd.Init.low_power_enable = 0;
-  hpcd.Init.phy_itface = PCD_PHY_EMBEDDED;
-  hpcd.Init.Sof_enable = 0;
-  hpcd.Init.speed = PCD_SPEED_FULL;
-  hpcd.Init.vbus_sensing_enable = 0;
-  hpcd.Init.lpm_enable = 0;
+  hpcd_USB_OTG_FS.Instance = USB_OTG_FS;
+  hpcd_USB_OTG_FS.Init.dev_endpoints = 6;
+  hpcd_USB_OTG_FS.Init.use_dedicated_ep1 = 0;
+  hpcd_USB_OTG_FS.Init.dma_enable = 0;
+  hpcd_USB_OTG_FS.Init.low_power_enable = 0;
+  hpcd_USB_OTG_FS.Init.phy_itface = PCD_PHY_EMBEDDED;
+  hpcd_USB_OTG_FS.Init.Sof_enable = 0;
+  hpcd_USB_OTG_FS.Init.speed = PCD_SPEED_FULL;
+  hpcd_USB_OTG_FS.Init.vbus_sensing_enable = 0;
+  hpcd_USB_OTG_FS.Init.lpm_enable = 0;
 
   /* Link The driver to the stack */
-  hpcd.pData = pdev;
-  pdev->pData = &hpcd;
+  hpcd_USB_OTG_FS.pData = pdev;
+  pdev->pData = &hpcd_USB_OTG_FS;
 
   /* Initialize LL Driver */
-  HAL_PCD_Init(&hpcd);
+  HAL_PCD_Init(&hpcd_USB_OTG_FS);
 
-  HAL_PCDEx_SetRxFiFo(&hpcd, 0x80);
-  HAL_PCDEx_SetTxFiFo(&hpcd, 0, 0x40);
-  HAL_PCDEx_SetTxFiFo(&hpcd, 1, 0x80);
+  HAL_PCDEx_SetRxFiFo(&hpcd_USB_OTG_FS, 0x80);
+  HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 0, 0x40);
+  HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 1, 0x80);
 #endif
 
 #ifdef USE_USB_HS
