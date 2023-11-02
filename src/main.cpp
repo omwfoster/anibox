@@ -219,11 +219,11 @@ int main(void)
 
   // initial command for stepper initialisation - link to timers and irq handler
 
-//  motor1->timerInit(TIM3, 3, TIM3_IRQn, 16000000);
-//  motor1->setDirPin(GPIOJ, 0);
-//  motor1->setSleepPin(GPIOB, 8);
-//  motor1->setSpeed(150);
-//  motor1->enableInterrupt();
+  motor1->timerInit(TIM3, 3, TIM3_IRQn, 16000000);
+  motor1->setDirPin(GPIOJ, 0);
+  motor1->setSleepPin(GPIOB, 8);
+  motor1->setSpeed(150);
+  motor1->enableInterrupt();
 
 //  motor2->timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
 ///  motor2->setDirPin(GPIOI, 3);
