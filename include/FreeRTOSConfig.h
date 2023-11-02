@@ -47,6 +47,8 @@
 /* Section where include file can be added */
 /* USER CODE END Includes */
 
+
+
 /* Ensure definitions are only used by the compiler, and not by the assembler. */
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
   #include <stdint.h>
@@ -63,8 +65,8 @@
 #define configCPU_CLOCK_HZ                       ( SystemCoreClock )
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 7 )
-#define configMINIMAL_STACK_SIZE                 ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE                    ((size_t)32768)
+#define configMINIMAL_STACK_SIZE                 ((uint16_t)512)
+#define configTOTAL_HEAP_SIZE                    ((size_t)65536)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_16_BIT_TICKS                   0
 #define configUSE_MUTEXES                        1

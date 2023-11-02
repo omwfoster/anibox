@@ -24,10 +24,13 @@
 
 #include <std_msgs/msg/int32.h>
 
-extern "C" {
-  extern const int uxTopUsedPriority;
- __attribute__((used)) const int uxTopUsedPriority = configMAX_PRIORITIES - 1;
-}
+static volatile int uxTopUsedPriority;
+
+
+
+
+
+
 
 
 
@@ -42,14 +45,16 @@ void PeriphCommonClock_Config(void);
 
 osThreadId lvgl_tickHandle;
 osThreadId lvgl_timerHandle;
-osThreadId ui_threadHandle;
 osThreadId uros_threadHandle;
+osThreadId ui_threadHandle;
+
 
 
 void ui_thread(void const *arg);
 void LVGLTimer(void const *arg);
-void LGVLTick(void const *arg);
 void uros_thread(void const *arg);
+void LGVLTick(void const *arg);
+
 
 static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
@@ -169,7 +174,7 @@ uint8_t step_init()
 uint8_t CDC_BUF[128];
 int main(void)
 {
-
+  uxTopUsedPriority = configMAX_PRIORITIES - 1;
   volatile uint8_t ret = 0;
 
   CPU_CACHE_Enable();
@@ -237,11 +242,13 @@ int main(void)
   osThreadDef(LVGLTimer, LVGLTimer, osPriorityNormal, 0, 1024);
   lvgl_timerHandle = osThreadCreate(osThread(LVGLTimer), NULL);
 
+  osThreadDef(uros_thread, uros_thread, osPriorityNormal, 0, 4096);
+  uros_threadHandle = osThreadCreate(osThread(uros_thread), NULL);
+
   osThreadDef(ui_thread, ui_thread, osPriorityNormal, 0, 4096);
   ui_threadHandle = osThreadCreate(osThread(ui_thread), NULL);
 
-  osThreadDef(uros_thread, uros_thread, osPriorityNormal, 0, 4096);
-  uros_threadHandle = osThreadCreate(osThread(uros_thread), NULL);
+
 
   /* Start scheduler */
   // anibox_step_gpio();// anibox_step_tim();
@@ -371,10 +378,7 @@ void uros_thread(void const *arg)
   freeRTOS_allocator.reallocate = microros_reallocate;
   freeRTOS_allocator.zero_allocate = microros_zero_allocate;
 
-  if (!rcutils_set_default_allocator(&freeRTOS_allocator))
-  {
-    printf("Error on default allocators (line %d)\n", __LINE__);
-  }
+ 
 
   // micro-ROS app
 
@@ -401,12 +405,12 @@ void uros_thread(void const *arg)
 
   msg.data = 0;
 
-  for (;;)
+  while(1)
   {
     rcl_ret_t ret = rcl_publish(&publisher, &msg, NULL);
     if (ret != RCL_RET_OK)
     {
-      printf("Error publishing (line %d)\n", __LINE__);
+      osDelay(10);
     }
 
     msg.data++;
