@@ -23,6 +23,7 @@
 #include <rmw_microros/rmw_microros.h>
 
 #include <std_msgs/msg/int32.h>
+#include "usb_device.h"
 
 static volatile int uxTopUsedPriority;
 
@@ -45,7 +46,7 @@ void LVGLTimer(void const *arg);
 void uros_thread(void const *arg);
 void LGVLTick(void const *arg);
 
-static void SystemClock_Config(void);
+void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
 
 lv_ui guider_ui;
@@ -55,8 +56,8 @@ void screen_roller_1_event_handler(lv_event_t *e);
 rcl_publisher_t publisher;
 std_msgs__msg__Int32 msg;
 
-//USBD_HandleTypeDef hUsbDeviceFS;
-USBD_HandleTypeDef  USBD_Device;
+
+
 
 void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
 {
@@ -157,34 +158,6 @@ uint8_t step_init()
   return 1;
 }
 
-uint8_t MX_USB_DEVICE_Init(void)
-{
-  /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
-
-  /* USER CODE END USB_DEVICE_Init_PreTreatment */
-
-  /* Init Device Library, add supported class and start the library. */
-  if (USBD_Init(&USBD_Device, &VCP_Desc, 0) != USBD_OK)
-  {
-    return 0;
-  }
-  if (USBD_RegisterClass(&USBD_Device, USBD_CDC_CLASS) != USBD_OK)
-  {
-    return 0;
-  }
-  if (USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_fops) != USBD_OK)
-  {
-    return 0;
-  }
-  if (USBD_Start(&USBD_Device) != USBD_OK)
-  {
-    return 0;
-  }
-
-  /* USER CODE BEGIN USB_DEVICE_Init_PostTreatment */
-  return 1;
-  /* USER CODE END USB_DEVICE_Init_PostTreatment */
-}
 
 
 
@@ -194,7 +167,7 @@ uint8_t CDC_BUF[128];
 int main(void)
 {
   uxTopUsedPriority = configMAX_PRIORITIES - 1;
-  volatile uint8_t ret = 0;
+  
 
   CPU_CACHE_Enable();
 
@@ -209,7 +182,8 @@ int main(void)
   MX_DSIHOST_DSI_Init();
   MX_TIM10_Init();
  // MX_TIM3_Init();
-  //MX_USB_OTG_FS_PCD_Init();
+  
+  MX_USB_DEVICE_Init();
 
 
   // lvgl initialisation
@@ -224,8 +198,6 @@ int main(void)
 
   //step_init();
 
-  volatile uint8_t usb_ret = MX_USB_DEVICE_Init();
-
   // initial command for stepper initialisation - link to timers and irq handler
 
   //motor1->timerInit(TIM3, 3, TIM3_IRQn, 16000000);
@@ -234,11 +206,11 @@ int main(void)
   //motor1->setSpeed(150);
   //motor1->enableInterrupt();
 
-//  motor2->timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
-//  motor2->setDirPin(GPIOI, 3);
-//  motor2->setSleepPin(GPIOB, 8);
-//  motor2->setSpeed(150);
-//  motor2->enableInterrupt();
+  // motor2->timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
+  // motor2->setDirPin(GPIOI, 3);
+  // motor2->setSleepPin(GPIOB, 8);
+  // motor2->setSpeed(150);
+  // motor2->enableInterrupt();
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
@@ -271,7 +243,7 @@ int main(void)
  * @brief System Clock Configuration
  * @retval None
  */
-static void SystemClock_Config(void)
+void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
@@ -376,13 +348,13 @@ void uros_thread(void const *arg)
   /* Infinite loop */
   // micro-ROS configuration
 
-       rmw_uros_set_custom_transport(
-        true,
-        (void *)USART1,
-        cubemx_transport_open,
-        cubemx_transport_close,
-        cubemx_transport_write,
-        cubemx_transport_read);   
+ //      rmw_uros_set_custom_transport(
+ //       true,
+ //       (void *)USART1,
+ //       cubemx_transport_open,
+ //       cubemx_transport_close,
+ //       cubemx_transport_write,
+ //       cubemx_transport_read);   
 
   rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
   freeRTOS_allocator.allocate = microros_allocate;

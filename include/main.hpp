@@ -40,10 +40,9 @@ extern "C"
 #include <rclc/executor.h>
 
 #include <std_msgs/msg/int32.h>
+extern void SystemClock_Config(void);
 
-#include "usbd_conf.h"
-#include "usbd_desc.h"
-#include "usbd_cdc_if.h"
+
 
 //  bool cubemx_transport_open(struct uxrCustomTransport *transport);
 //  bool cubemx_transport_close(struct uxrCustomTransport *transport);

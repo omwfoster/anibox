@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "stm32f7xx_hal.h": "c"
+        "stm32f7xx_hal.h": "c",
+        "main.hpp": "c",
+        "usbd_conf.h": "c"
     }
 }
