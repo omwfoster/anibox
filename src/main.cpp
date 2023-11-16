@@ -223,8 +223,8 @@ int main(void)
   osThreadDef(LVGLTimer, LVGLTimer, osPriorityNormal, 0, 1024);
   lvgl_timerHandle = osThreadCreate(osThread(LVGLTimer), NULL);
 
- // osThreadDef(uros_thread, uros_thread, osPriorityNormal, 0, 4096);
- // uros_threadHandle = osThreadCreate(osThread(uros_thread), NULL);
+  osThreadDef(uros_thread, uros_thread, osPriorityNormal, 0, 4096);
+  uros_threadHandle = osThreadCreate(osThread(uros_thread), NULL);
 
   osThreadDef(ui_thread, ui_thread, osPriorityNormal, 0, 4096);
   ui_threadHandle = osThreadCreate(osThread(ui_thread), NULL);
@@ -348,13 +348,13 @@ void uros_thread(void const *arg)
   /* Infinite loop */
   // micro-ROS configuration
 
- //      rmw_uros_set_custom_transport(
- //       true,
- //       (void *)USART1,
- //       cubemx_transport_open,
- //       cubemx_transport_close,
- //       cubemx_transport_write,
- //       cubemx_transport_read);   
+       rmw_uros_set_custom_transport(
+        true,
+        (void *)USART1,
+        cubemx_transport_open,
+        cubemx_transport_close,
+        cubemx_transport_write,
+        cubemx_transport_read);   
 
   rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
   freeRTOS_allocator.allocate = microros_allocate;

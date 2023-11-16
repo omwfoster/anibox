@@ -63,7 +63,7 @@ typedef bool (* close_custom_func) (
  */
 typedef size_t (* write_custom_func) (
         struct uxrCustomTransport* transport,
-        const uint8_t* buffer,
+        uint8_t* buffer,
         size_t length,
         uint8_t* error_code);
 
