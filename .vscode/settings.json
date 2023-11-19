@@ -2,6 +2,7 @@
     "files.associations": {
         "stm32f7xx_hal.h": "c",
         "main.hpp": "c",
-        "usbd_conf.h": "c"
+        "usbd_conf.h": "c",
+        "int32__struct.h": "c"
     }
 }

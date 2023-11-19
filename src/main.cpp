@@ -65,7 +65,7 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
   if (timer != NULL)
   {
     RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
-    // printf("Sent: %d\n", msg.data);
+  //   printf("Sent: %d\n", msg.data);
     msg.data++;
   }
 }
@@ -347,6 +347,7 @@ void uros_thread(void const *arg)
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
   // micro-ROS configuration
+  const char * topic_name = "test_topic";
 
        rmw_uros_set_custom_transport(
         true,
@@ -385,7 +386,7 @@ void uros_thread(void const *arg)
       ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
       "cubemx_publisher");
 
-  msg.data = 0;
+  msg.data = 100;
 
   while(1)
   {
