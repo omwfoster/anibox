@@ -21,30 +21,37 @@
 #include <rmw_microros/custom_transport.h>
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw_microros/rmw_microros.h>
+#include <std_msgs/msg/string.h>
 
 #include <std_msgs/msg/int32.h>
 #include "usb_device.h"
 
 static volatile int uxTopUsedPriority;
 
-
 uint8_t cec_receive_buffer[16];
 static void Error_Handler(void);
 
 void PeriphCommonClock_Config(void);
-
 
 osThreadId lvgl_tickHandle;
 osThreadId lvgl_timerHandle;
 osThreadId uros_threadHandle;
 osThreadId ui_threadHandle;
 
-
-
 void ui_thread(void const *arg);
 void LVGLTimer(void const *arg);
 void uros_thread(void const *arg);
 void LGVLTick(void const *arg);
+
+rcl_publisher_t publisher;
+std_msgs__msg__Int32 msg;
+rclc_support_t support;
+rcl_allocator_t allocator;
+rcl_node_t node;
+rclc_executor_t executor;
+
+std_msgs__msg__String pub_msg;
+std_msgs__msg__String sub_msg;
 
 void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
@@ -53,8 +60,6 @@ lv_ui guider_ui;
 
 void screen_roller_1_event_handler(lv_event_t *e);
 
-rcl_publisher_t publisher;
-std_msgs__msg__Int32 msg;
 
 
 
@@ -65,13 +70,12 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
   if (timer != NULL)
   {
     RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
-  //   printf("Sent: %d\n", msg.data);
+    //   printf("Sent: %d\n", msg.data);
     msg.data++;
   }
 }
 
 // Thread Handles
-
 
 /* LVGL timer for tasks. */
 void LVGLTimer(void const *argument)
@@ -158,16 +162,10 @@ uint8_t step_init()
   return 1;
 }
 
-
-
-
-
-
 uint8_t CDC_BUF[128];
 int main(void)
 {
   uxTopUsedPriority = configMAX_PRIORITIES - 1;
-  
 
   CPU_CACHE_Enable();
 
@@ -181,10 +179,9 @@ int main(void)
   MX_DMA2D_Init();
   MX_DSIHOST_DSI_Init();
   MX_TIM10_Init();
- // MX_TIM3_Init();
-  
-  MX_USB_DEVICE_Init();
+  // MX_TIM3_Init();
 
+  MX_USB_DEVICE_Init();
 
   // lvgl initialisation
 
@@ -192,19 +189,19 @@ int main(void)
   tft_init();
   touchpad_init();
   setup_ui(&guider_ui);
-  //beam_breaker * bb = new beam_breaker(GPIOA_BASE,GPIO_PIN_2);
+  // beam_breaker * bb = new beam_breaker(GPIOA_BASE,GPIO_PIN_2);
 
   events_init_screen(&guider_ui);
 
-  //step_init();
+  // step_init();
 
   // initial command for stepper initialisation - link to timers and irq handler
 
-  //motor1->timerInit(TIM3, 3, TIM3_IRQn, 16000000);
-  //motor1->setDirPin(GPIOJ, 0);
-  //motor1->setSleepPin(GPIOB, 8);
-  //motor1->setSpeed(150);
-  //motor1->enableInterrupt();
+  // motor1->timerInit(TIM3, 3, TIM3_IRQn, 16000000);
+  // motor1->setDirPin(GPIOJ, 0);
+  // motor1->setSleepPin(GPIOB, 8);
+  // motor1->setSpeed(150);
+  // motor1->enableInterrupt();
 
   // motor2->timerInit(TIM11, 1, TIM1_TRG_COM_TIM11_IRQn, 16000000);
   // motor2->setDirPin(GPIOI, 3);
@@ -233,7 +230,7 @@ int main(void)
   // anibox_step_gpio();// anibox_step_tim();
   osKernelStart();
 
-  while(1)
+  while (1)
   {
     osDelay(5);
   }
@@ -326,10 +323,6 @@ void PeriphCommonClock_Config(void)
   }
 }
 
-
-
-
-
 const char *start_byte = "Hello World!\n";
 
 void ui_thread(void const *arg)
@@ -341,21 +334,44 @@ void ui_thread(void const *arg)
   }
 }
 
+void my_timer_callback(rcl_timer_t *timer, int64_t last_call_time)
+{
+  rcl_ret_t rc;
+  UNUSED(last_call_time);
+  
+  if (timer != NULL)
+  {
+    rc = rcl_publish(&publisher, &msg, NULL);
+    if (rc == RCL_RET_OK)
+    {
+      printf("Published message %s\n",pub_msg.data.data) ;
+    }
+    else
+    {
+      printf("Error in timer_callback: Message %s could not be published\n", pub_msg.data.data);
+    }
+  }
+  else
+  {
+    printf("Error in timer_callback: timer parameter is NULL\n");
+  }
+}
+
 void uros_thread(void const *arg)
 {
 
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
   // micro-ROS configuration
-  const char * topic_name = "test_topic";
+  const char *topic_name = "squark";
 
-       rmw_uros_set_custom_transport(
-        true,
-        (void *)USART1,
-        cubemx_transport_open,
-        cubemx_transport_close,
-        cubemx_transport_write,
-        cubemx_transport_read);   
+  rmw_uros_set_custom_transport(
+      true,
+      (void *)USART1,
+      cubemx_transport_open,
+      cubemx_transport_close,
+      cubemx_transport_write,
+      cubemx_transport_read);
 
   rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
   freeRTOS_allocator.allocate = microros_allocate;
@@ -365,40 +381,49 @@ void uros_thread(void const *arg)
 
   // micro-ROS app
 
-  rcl_publisher_t publisher;
-  std_msgs__msg__Int32 msg;
-  rclc_support_t support;
-  rcl_allocator_t allocator;
-  rcl_node_t node;
+  volatile rcl_ret_t ret = 0;
 
   allocator = rcl_get_default_allocator();
 
   // create init_options
-  rclc_support_init(&support, 0, NULL, &allocator);
+  ret = rclc_support_init(&support, 0, NULL, &allocator);
 
   // create node
-  rclc_node_init_default(&node, "cubemx_node", "", &support);
+  ret = rclc_node_init_default(&node, topic_name, "", &support);
 
   // create publisher
-  rclc_publisher_init_default(
+  ret = rclc_publisher_init_default(
       &publisher,
       &node,
       ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-      "cubemx_publisher");
+      topic_name);
 
   msg.data = 100;
 
-  while(1)
+   // assign message to publisher
+  std_msgs__msg__String__init(&pub_msg);
+  const unsigned int PUB_MSG_CAPACITY = 20;
+  pub_msg.data.data = (char *)malloc(PUB_MSG_CAPACITY);
+  pub_msg.data.capacity = PUB_MSG_CAPACITY;
+  snprintf(pub_msg.data.data, pub_msg.data.capacity, "Hello World!");
+  pub_msg.data.size = strlen(pub_msg.data.data);
+
+  rcl_timer_t my_timer;
+  const unsigned int timer_timeout = 1000; // in ms
+  ret = rclc_timer_init_default(&my_timer, &support, RCL_MS_TO_NS(timer_timeout), my_timer_callback);
+  if (ret != RCL_RET_OK)
   {
-    rcl_ret_t ret = rcl_publish(&publisher, &msg, NULL);
-    if (ret != RCL_RET_OK)
-    {
-      osDelay(10);
-    }
+    printf("Error in rcl_timer_init_default.\n");
+  }
+  else
+  {
+    printf("Created timer with timeout %d ms.\n", timer_timeout);
+  }
 
-    msg.data++;
-    osDelay(10);
+  while (1)
+  {
 
+     rclc_executor_spin(&executor);
     /* USER CODE END StartDefaultTask */
   }
 }
@@ -439,8 +464,6 @@ void screen_roller_1_event_handler(lv_event_t *e)
     motor1->setSpeed(100);
   }
 }
-
-
 
 #ifdef USE_FULL_ASSERT
 /**

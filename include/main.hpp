@@ -98,6 +98,8 @@ extern void SystemClock_Config(void);
 
   /* Section 2: PHY configuration section */
 
+  
+
 #ifdef __cplusplus
 }
 #endif
